@@ -3,18 +3,20 @@ import { ref } from 'vue';
 import ModeItem from './components/ModeItem.vue';
 import useSettingStore from '@/stores/useSettingStore';
 import useFontCreator from '@/components/FontCreator/useFontCreator';
-const { fontSize, mode, color } = useSettingStore();
+const { fontSize, mode, color, fontFaces, fontFace } = useSettingStore();
 const { needText } = useFontCreator();
 const modes = ['列行式', '行列式', '逐列式', '逐行式'];
-
-
+console.log('SettingPanel:fontFaces', fontFaces.value);
 </script>
 
 <template>
     <div class="flex flex-col h-full px-5 pt-5">
-        <div class="font-bold ">字体大小:</div>
+        <div class="font-bold ">字体:</div>
         <div class="h-2"></div>
-        <div class="flex gap-5">
+        <div class="flex items-center gap-5">
+            <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontFace">
+                <option v-for="f in fontFaces" :value="f" :key="f.family">{{ f.family }}</option>
+            </select>
             <div>宽:</div>
             <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm" />
             <div>高:</div>

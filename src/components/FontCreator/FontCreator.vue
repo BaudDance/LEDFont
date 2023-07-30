@@ -6,7 +6,7 @@ import useSettingStore from "@/stores/useSettingStore";
 const canvasRef = ref(null);
 const debug = ref(true);
 const { needText, fonts } = useFontCreator();
-const { mode, fontSize, color } = useSettingStore();
+const { mode, fontSize, color, fontFace } = useSettingStore();
 
 
 
@@ -21,7 +21,7 @@ async function getFont(c) {
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = "#FFF";
-    ctx.font = "normal 400px sans-serif";
+    ctx.font = `400px ${fontFace.value.family}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -113,9 +113,11 @@ function canvasInit() {
     ctx.scale(dpr, dpr);
 }
 
-onMounted(() => {
+onMounted(async () => {
     canvasInit();
-    watch([needText, fontSize, mode, color], async () => {
+    watch([needText, fontSize, mode, color, fontFace], async () => {
+        await fontFace.value.load();
+        document.fonts.add(fontFace.value);
         const needList = [...new Set(needText.value.split(""))];
         const res = {};
         for (let i = 0; i < needList.length; i++) {

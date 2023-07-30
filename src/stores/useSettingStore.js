@@ -16,11 +16,20 @@ export default createGlobalState(() => {
 
   const template = ref("");
 
+  const fontFaces = ref([
+    new FontFace("文泉驿微米黑", "url(/fonts/WenQuanDengKuanWeiMiHei.ttf)"),
+    new FontFace("思源黑体", "url(/fonts/SourceHanSansSC-VF.ttf)"),
+  ]);
+
+  const fontFace = ref(fontFaces.value[0]);
+
   return {
     fontSize,
     mode,
     color,
     endian,
     template,
+    fontFaces,
+    fontFace,
   };
 });
