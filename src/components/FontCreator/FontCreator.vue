@@ -6,7 +6,7 @@ import useSettingStore from "@/stores/useSettingStore";
 const canvasRef = ref(null);
 const debug = ref(true);
 const { needText, fonts } = useFontCreator();
-const { mode, fontSize } = useSettingStore();
+const { mode, fontSize, color } = useSettingStore();
 
 
 
@@ -83,6 +83,12 @@ async function getFont(c) {
         }
     }
 
+    if (color.value == '阳码') {
+        res.forEach((v, i) => {
+            res[i] = ~v & 0xff;
+        });
+    }
+
     const hex = res.map((v) => {
         let s = v.toString(16);
         if (s.length === 1) {
@@ -109,7 +115,7 @@ function canvasInit() {
 
 onMounted(() => {
     canvasInit();
-    watch([needText, fontSize, mode], async () => {
+    watch([needText, fontSize, mode, color], async () => {
         const needList = [...new Set(needText.value.split(""))];
         const res = {};
         for (let i = 0; i < needList.length; i++) {
