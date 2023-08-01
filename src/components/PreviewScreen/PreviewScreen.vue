@@ -174,7 +174,7 @@ function showImagePreview() {
 
 
 
-watch([width, fonts], () => {
+watch([width, fonts, ledImg], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
     showCanvas.value.height = width.value / screenSize.width * screenSize.height;

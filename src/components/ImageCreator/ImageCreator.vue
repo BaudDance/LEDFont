@@ -7,21 +7,11 @@ import { watchDebounced } from "@vueuse/core";
 const canvasRef = ref(null);
 const imgRef = ref(null);
 const { mode, color, imageSize } = useSettingStore();
-const { sourceImg, ledImg } = useImageCreator();
+const { sourceImg, ledImg, imgThreshold } = useImageCreator();
 
 
 async function getGlyph() {
-    console.log("getGlyph: ", sourceImg.value);
-    const ctx = canvasRef.value.getContext("2d");
-    const width = canvasRef.value.width;
-    const height = canvasRef.value.height;
 
-    // 清屏
-    // ctx.fillStyle = "#000";
-    // ctx.fillRect(0, 0, width, height);
-
-    // 将sourceImg文件绘制到canvas上
-    // ctx.drawImage(sourceImg.value, 0, 0, width, height);
     let img = document.createElement('img')
     img.src = sourceImg.value;
 
@@ -29,13 +19,15 @@ async function getGlyph() {
         const canvas = canvasRef.value;
         canvas.width = img.width;
         canvas.height = img.height;
+        const ctx = canvasRef.value.getContext("2d");
+
         ctx.clearRect(0, 0, img.width, img.height) // 清除画布
         ctx.drawImage(img, 0, 0, img.width, img.height)
         const cv = await ccv;
         let mat = cv.imread("inputImgCanvas");
         let imgScaled = new cv.Mat();
         cv.resize(mat, imgScaled, new cv.Size(imageSize.value.width, imageSize.value.height), cv.INTER_CUBIC);
-        cv.threshold(imgScaled, imgScaled, 157, 255, cv.THRESH_BINARY);
+        cv.threshold(imgScaled, imgScaled, imgThreshold.value, 255, cv.THRESH_BINARY);
         cv.imshow("outputImgCanvas", imgScaled);
         const res = [];
 
@@ -102,7 +94,7 @@ async function getGlyph() {
             }
             return "0x" + s;
         });
-        console.log("hex: ", hex.join(", "));
+        console.log("hex2: ", hex.join(", "));
         mat.delete();
         imgScaled.delete();
     };
@@ -120,9 +112,8 @@ function canvasInit() {
 }
 
 onMounted(async () => {
-    canvasInit();
-    watchDebounced([mode, color, sourceImg], async () => {
-        canvasInit()
+    canvasInit()
+    watchDebounced([mode, color, sourceImg, imageSize, imgThreshold], async () => {
         getGlyph()
     }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
 

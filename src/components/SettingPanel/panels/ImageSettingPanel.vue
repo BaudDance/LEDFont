@@ -6,8 +6,11 @@ import useImageCreator from '@/components/ImageCreator/useImageCreator';
 import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
+import { watchDebounced } from '@vueuse/core'
 const { fontSize, imageSize, modeList, mode, color, fontFaces, fontFace, template } = useSettingStore();
-const { sourceImg } = useImageCreator();
+const { sourceImg, imgThreshold } = useImageCreator();
+
+const threshold = ref(imgThreshold.value)
 
 async function onUploadImg(event) {
     let file = event.target.files[0]
@@ -19,6 +22,9 @@ async function onUploadImg(event) {
         console.log('reader:', reader.result);
     }
 }
+watchDebounced(threshold, async () => {
+    imgThreshold.value = parseInt(threshold.value)
+}, { debounce: 100, maxWait: 300 });
 </script>
 
 <template>
@@ -36,6 +42,12 @@ async function onUploadImg(event) {
         <div>高:</div>
         <input type="number" v-model="imageSize.height" class="w-full max-w-xs input input-bordered input-sm" />
     </div>
+    <div class="h-5"></div>
+
+    <div class="font-bold ">二值化阈值:</div>
+    <div class="h-2"></div>
+    <input type="range" min="0" max="256" class="range range-xs" v-model="threshold" />
+    <div>{{ threshold }}</div>
 
     <div class="h-5"></div>
     <div class="font-bold ">取模方式:</div>

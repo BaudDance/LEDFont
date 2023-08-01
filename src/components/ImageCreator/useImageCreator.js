@@ -3,7 +3,7 @@ import { createGlobalState } from "@vueuse/core";
 import useSettingStore from "@/stores/useSettingStore";
 export default createGlobalState(() => {
   const sourceImg = ref();
-  const { mode, color } = useSettingStore();
   const ledImg = ref({});
-  return { sourceImg, ledImg };
+  const imgThreshold = ref(128);
+  return { sourceImg, ledImg, imgThreshold };
 });
