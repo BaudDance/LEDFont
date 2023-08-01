@@ -113,7 +113,7 @@ async function getFont2(c) {
 
     return res;
 }
-async function getFont(c) {
+async function getGlyph(c) {
     // return getFont2(c);
     console.log("getFont: ", c);
     const ctx = canvasRef.value.getContext("2d");
@@ -159,8 +159,8 @@ async function getFont(c) {
 
     // console.log("getFont: ", mat, imgScaled);
     cv.resize(mat, imgScaled, new cv.Size(fontSize.value.width, fontSize.value.height), cv.INTER_AREA);
-    cv.threshold(imgScaled, imgScaled, 120, 255, cv.THRESH_BINARY);
-    cv.imshow("outputCanvas", imgScaled);
+    cv.threshold(imgScaled, imgScaled, 127, 255, cv.THRESH_BINARY);
+    // cv.imshow("outputCanvas", imgScaled);
     // cv.resize(mat, imgScaled, new cv.Size(fontSize.value.width * 2, fontSize.value.height * 2), cv.INTER_AREA);
 
     // cv.imshow("outputCanvas", imgScaled);
@@ -254,8 +254,7 @@ onMounted(async () => {
         const needList = [...new Set(needText.value.split(""))];
         const res = {};
         for await (let c of needList) {
-            // const c = needList[i];
-            const font = await getFont(c);
+            const font = await getGlyph(c);
             res[c] = {
                 width: fontSize.value.width,
                 height: fontSize.value.height,

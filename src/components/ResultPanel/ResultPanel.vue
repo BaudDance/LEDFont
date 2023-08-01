@@ -10,10 +10,9 @@ const parent = ref(null)
 const codePanel = ref(null)
 const { width, height } = useElementSize(parent)
 const { fonts } = useFontCreator();
-const { fontSize } = useSettingStore();
+const { fontSize, template } = useSettingStore();
 const code = ref("");
 
-const template = "const unsigned char zh_@w#x@h#[][@font_len#] = {\n@data1#\n};\nconst ZHFont zhfont@w#x@h# = {@w#, @h#, (const unsigned char *)zh_@w#x@h#, @len#, &font24x12};"
 
 
 watch([width, height], () => {
@@ -25,11 +24,11 @@ watch([width, height], () => {
 const utf8Encoder = new TextEncoder();
 
 watch(fonts, () => {
-    let t = template;
-    t = t.replaceAll('@w#', fontSize.value.width)
-    t = t.replaceAll('@h#', fontSize.value.height)
+    let t = template.value;
+    t = t.replaceAll('/*_w_*/', fontSize.value.width)
+    t = t.replaceAll('/*_h_*/', fontSize.value.height)
     const fontlen = (fontSize.value.width * fontSize.value.height) / 8 + 4;
-    t = t.replaceAll('@font_len#', fontlen)
+    t = t.replaceAll('/*_font_len_*/', fontlen)
     let data1 = ""
     Object.keys(fonts.value).forEach(key => {
         data1 += `/* ${key} */ {`
@@ -44,8 +43,8 @@ watch(fonts, () => {
         });
         data1 += `},\n`;
     });
-    t = t.replaceAll('@data1#', data1)
-    t = t.replaceAll('@len#', Object.keys(fonts.value).length)
+    t = t.replaceAll('/*_data1_*/', data1)
+    t = t.replaceAll('/*_len_*/', Object.keys(fonts.value).length)
     code.value = t;
 })
 

@@ -5,11 +5,13 @@ import SettingPanel from "./components/SettingPanel/SettingPanel.vue";
 import FontCreator from "./components/FontCreator/FontCreator.vue";
 import PreviewScreen from "./components/PreviewScreen/PreviewScreen.vue";
 import ResultPanel from "./components/ResultPanel/ResultPanel.vue";
+import ImageCreator from "./components/ImageCreator/ImageCreator.vue";
 
 </script>
 
 <template>
   <FontCreator class="absolute top-0 invisible" />
+  <ImageCreator class="absolute top-0 invisible" />
   <div class="flex items-center justify-center h-screen">
     <div class="container relative flex 2xl:mx-56 aspect-video flex-nowrap" style="max-height: 90%;">
       <div class="border-2 border-gray-400 border-solid rounded-xl basis-1/2">
