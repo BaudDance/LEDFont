@@ -171,14 +171,10 @@ function showImagePreview() {
     }
 }
 
-
-
-
 watch([width, fonts, ledImg], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
     showCanvas.value.height = width.value / screenSize.width * screenSize.height;
-
     if (source.value == '字体取模') {
         showFontPreview();
     } else if (source.value == '图片取模') {

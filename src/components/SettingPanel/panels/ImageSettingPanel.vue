@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ModeItem from '../components/ModeItem.vue';
 import useSettingStore from '@/stores/useSettingStore';
 import useImageCreator from '@/components/ImageCreator/useImageCreator';
@@ -11,20 +11,53 @@ const { fontSize, imageSize, modeList, mode, color, fontFaces, fontFace, templat
 const { sourceImg, imgThreshold } = useImageCreator();
 
 const threshold = ref(imgThreshold.value)
+const proportional = ref(true) // 等比缩放
+const width = computed({
+    get() {
+        return imageSize.value.width
+    },
+    set(v) {
+        if (proportional.value) {
+            imageSize.value.height = Math.round(v / sourceImg.value.width * sourceImg.value.height)
+        }
+        imageSize.value.width = v;
+    }
+})
+const height = computed({
+    get() {
+        return imageSize.value.height
+    },
+    set(v) {
+        if (proportional.value) {
+            imageSize.value.width = Math.round(v / sourceImg.value.height * sourceImg.value.width)
+        }
+        imageSize.value.height = v;
+    }
+})
 
 async function onUploadImg(event) {
     let file = event.target.files[0]
+    console.log('file:', file)
     if (!file) return
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = async () => {
-        sourceImg.value = reader.result
-        console.log('reader:', reader.result);
+    reader.onload = async (e) => {
+        let image = new Image();
+        image.onload = function () {
+            imageSize.value = {
+                width: this.width,
+                height: this.height,
+            }
+            sourceImg.value = image;
+        }
+        image.src = e.target.result;
     }
 }
 watchDebounced(threshold, async () => {
     imgThreshold.value = parseInt(threshold.value)
 }, { debounce: 100, maxWait: 300 });
+
+
 </script>
 
 <template>
@@ -38,10 +71,19 @@ watchDebounced(threshold, async () => {
     <div class="h-2"></div>
     <div class="flex items-center gap-5">
         <div>宽:</div>
-        <input type="number" v-model="imageSize.width" class="w-full max-w-xs input input-bordered input-sm" />
+        <input type="number" v-model="width" class="w-full max-w-xs input input-bordered input-sm" />
         <div>高:</div>
-        <input type="number" v-model="imageSize.height" class="w-full max-w-xs input input-bordered input-sm" />
+        <input type="number" v-model="height" class="w-full max-w-xs input input-bordered input-sm" />
+        <div class="flex-shrink-0 form-control">
+            <label class="cursor-pointer label">
+                <span class="label-text">等比缩放</span>
+                <div class="w-2"></div>
+                <input type="checkbox" v-model="proportional" class="checkbox checkbox-success checkbox-sm" />
+            </label>
+        </div>
     </div>
+    <div class="h-2"></div>
+
     <div class="h-5"></div>
 
     <div class="font-bold ">二值化阈值:</div>

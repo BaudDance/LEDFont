@@ -12,92 +12,90 @@ const { sourceImg, ledImg, imgThreshold } = useImageCreator();
 
 async function getGlyph() {
 
-    let img = document.createElement('img')
-    img.src = sourceImg.value;
+    let img = sourceImg.value;
 
-    img.onload = async () => {
-        const canvas = canvasRef.value;
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvasRef.value.getContext("2d");
+    const canvas = canvasRef.value;
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvasRef.value.getContext("2d");
 
-        ctx.clearRect(0, 0, img.width, img.height) // 清除画布
-        ctx.drawImage(img, 0, 0, img.width, img.height)
-        const cv = await ccv;
-        let mat = cv.imread("inputImgCanvas");
-        let imgScaled = new cv.Mat();
-        cv.resize(mat, imgScaled, new cv.Size(imageSize.value.width, imageSize.value.height), cv.INTER_CUBIC);
-        cv.threshold(imgScaled, imgScaled, imgThreshold.value, 255, cv.THRESH_BINARY);
-        cv.imshow("outputImgCanvas", imgScaled);
-        const res = [];
+    ctx.clearRect(0, 0, img.width, img.height) // 清除画布
+    ctx.drawImage(img, 0, 0, img.width, img.height)
+    const cv = await ccv;
+    let mat = cv.imread("inputImgCanvas");
+    let imgScaled = new cv.Mat();
+    cv.resize(mat, imgScaled, new cv.Size(imageSize.value.width, imageSize.value.height), cv.INTER_CUBIC);
+    cv.threshold(imgScaled, imgScaled, imgThreshold.value, 255, cv.THRESH_BINARY);
+    cv.imshow("outputImgCanvas", imgScaled);
+    const res = [];
 
-        if (mode.value == '列行式') {
-            const page = ~~((imageSize.value.height + 7) / 8);
-            for (let i = 0; i < page; i++) {
-                for (let j = 0; j < imageSize.value.width; j++) {
-                    let v = 0;
-                    for (let k = 0; k < 8; k++) {
-                        v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
-                    }
-                    res.push(v);
-                }
-            }
-        } else if (mode.value == '行列式') {
-            const page = ~~((imageSize.value.width + 7) / 8);
-            for (let i = 0; i < page; i++) {
-                for (let j = 0; j < imageSize.value.height; j++) {
-                    let v = 0;
-                    for (let k = 0; k < 8; k++) {
-                        v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
-                    }
-                    res.push(v);
-                }
-            }
-        } else if (mode.value == '逐列式') {
-            const page = ~~((imageSize.value.height + 7) / 8);
+    if (mode.value == '列行式') {
+        const page = ~~((imageSize.value.height + 7) / 8);
+        for (let i = 0; i < page; i++) {
             for (let j = 0; j < imageSize.value.width; j++) {
-                for (let i = 0; i < page; i++) {
-                    let v = 0;
-                    for (let k = 0; k < 8; k++) {
-                        v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
-                    }
-                    res.push(v);
+                let v = 0;
+                for (let k = 0; k < 8; k++) {
+                    v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
                 }
+                res.push(v);
             }
-        } else if (mode.value == '逐行式') {
-            const page = ~~((imageSize.value.width + 7) / 8);
+        }
+    } else if (mode.value == '行列式') {
+        const page = ~~((imageSize.value.width + 7) / 8);
+        for (let i = 0; i < page; i++) {
             for (let j = 0; j < imageSize.value.height; j++) {
-                for (let i = 0; i < page; i++) {
-                    let v = 0;
-                    for (let k = 0; k < 8; k++) {
-                        v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
-                    }
-                    res.push(v);
+                let v = 0;
+                for (let k = 0; k < 8; k++) {
+                    v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
                 }
+                res.push(v);
             }
         }
+    } else if (mode.value == '逐列式') {
+        const page = ~~((imageSize.value.height + 7) / 8);
+        for (let j = 0; j < imageSize.value.width; j++) {
+            for (let i = 0; i < page; i++) {
+                let v = 0;
+                for (let k = 0; k < 8; k++) {
+                    v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
+                }
+                res.push(v);
+            }
+        }
+    } else if (mode.value == '逐行式') {
+        const page = ~~((imageSize.value.width + 7) / 8);
+        for (let j = 0; j < imageSize.value.height; j++) {
+            for (let i = 0; i < page; i++) {
+                let v = 0;
+                for (let k = 0; k < 8; k++) {
+                    v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
+                }
+                res.push(v);
+            }
+        }
+    }
 
-        if (color.value == '阳码') {
-            res.forEach((v, i) => {
-                res[i] = ~v & 0xff;
-            });
-        }
-        ledImg.value = {
-            width: imageSize.value.width,
-            height: imageSize.value.height,
-            data: res,
-        };
-        const hex = res.map((v) => {
-            let s = v.toString(16);
-            if (s.length === 1) {
-                s = "0" + s;
-            }
-            return "0x" + s;
+    if (color.value == '阳码') {
+        res.forEach((v, i) => {
+            res[i] = ~v & 0xff;
         });
-        console.log("hex2: ", hex.join(", "));
-        mat.delete();
-        imgScaled.delete();
+    }
+    ledImg.value = {
+        width: imageSize.value.width,
+        height: imageSize.value.height,
+        data: res,
     };
+    const hex = res.map((v) => {
+        let s = v.toString(16);
+        if (s.length === 1) {
+            s = "0" + s;
+        }
+        return "0x" + s;
+    });
+    console.log("hex2: ", hex.join(", "));
+    mat.delete();
+    imgScaled.delete();
+
 }
 
 function canvasInit() {
