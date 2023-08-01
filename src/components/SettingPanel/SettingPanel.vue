@@ -3,14 +3,17 @@ import { ref } from 'vue';
 import ModeItem from './components/ModeItem.vue';
 import useSettingStore from '@/stores/useSettingStore';
 import useFontCreator from '@/components/FontCreator/useFontCreator';
-const { fontSize, mode, color, fontFaces, fontFace } = useSettingStore();
+import { Codemirror } from 'vue-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { cpp } from '@codemirror/lang-cpp'
+const { fontSize, mode, color, fontFaces, fontFace, template } = useSettingStore();
 const { needText } = useFontCreator();
 const modes = ['列行式', '行列式', '逐列式', '逐行式'];
 console.log('SettingPanel:fontFaces', fontFaces.value);
 </script>
 
 <template>
-    <div class="flex flex-col h-full px-5 pt-5">
+    <div class="flex flex-col px-5 pt-5">
         <div class="font-bold ">字体:</div>
         <div class="h-2"></div>
         <div class="flex items-center gap-5">
@@ -45,7 +48,13 @@ console.log('SettingPanel:fontFaces', fontFaces.value);
         <div class="font-bold ">需求文字:</div>
         <div class="h-2"></div>
         <textarea v-model="needText" class="textarea textarea-bordered"></textarea>
-
+        <div class="h-5"></div>
+        <div class="font-bold ">生成模板:</div>
+        <div class="h-2"></div>
+        <div style="width: 40rem;">
+            <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="template"
+                :extensions="[cpp(), oneDark]" />
+        </div>
         <!-- <div class="font-bold ">取模走向:</div>
         <div class="h-2"></div>
         <form class="flex gap-10">

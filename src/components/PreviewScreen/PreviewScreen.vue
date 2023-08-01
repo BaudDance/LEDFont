@@ -17,20 +17,15 @@ function showPreview() {
     const ctx = showCanvas.value.getContext("2d");
     // 背景
     ctx.fillStyle = "#000";
+    // ctx.fillStyle = "#495028";
     ctx.fillRect(0, 0, width.value, height.value);
-    // 写字
-    ctx.fillStyle = "#fff";
-    ctx.font = "20px serif";
+
     const size = width.value / screenSize.width;
-    // 画网格
-    ctx.fillStyle = "#060";
-    for (let i = 0; i < width.value; i += size) {
-        ctx.fillRect(i, 0, 0.3, height.value);
-    }
-    for (let i = 0; i < height.value; i += size) {
-        ctx.fillRect(0, i, width.value, 0.3);
-    }
+
+
+
     ctx.fillStyle = "#fff";
+    // ctx.fillStyle = "#ff8040";
     function drawFont(font, x0, y0) {
         const w = font.width;
         const h = font.height;
@@ -95,6 +90,15 @@ function showPreview() {
             y0 += font.height * size;
         }
     });
+
+    // 画网格
+    ctx.fillStyle = "#000";
+    for (let i = 0; i < width.value; i += size) {
+        ctx.fillRect(i, 0, 1.6, height.value);
+    }
+    for (let i = 0; i < height.value; i += size) {
+        ctx.fillRect(0, i, width.value, 1.6);
+    }
 }
 
 
@@ -110,7 +114,7 @@ watch([width, fonts], () => {
 </script>
 
 <template>
-    <div class="basis-2/4" ref="showCanvasParent">
+    <div ref="showCanvasParent">
         <canvas ref="showCanvas" id="showCanvas"></canvas>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted } from "vue";
 import { delay } from "@/utils/time";
 // 模式选项: 列行式 | 行列式 | 逐列式 | 逐行式 
 const { mode, selected, color } = defineProps({ mode: String, selected: Boolean, color: String })
@@ -32,7 +32,7 @@ async function draw() {
             for (let x = 0; x < width; x += cubeSize) {
                 for (let y = y0; y < y0 + 8 * cubeSize && y < height; y += cubeSize) {
                     ctx.fillRect(x, y, cubeSize - lineWidth, cubeSize - lineWidth);
-                    await delay(150);
+                    await delay(100);
                 }
             }
         }
@@ -41,7 +41,7 @@ async function draw() {
             for (let y = 0; y < height; y += cubeSize) {
                 for (let x = x0; x < x0 + 8 * cubeSize && x < width; x += cubeSize) {
                     ctx.fillRect(x, y, cubeSize - lineWidth, cubeSize - lineWidth);
-                    await delay(150);
+                    await delay(100);
                 }
             }
         }
@@ -49,14 +49,14 @@ async function draw() {
         for (let x = 0; x < width; x += cubeSize) {
             for (let y = 0; y < height; y += cubeSize) {
                 ctx.fillRect(x, y, cubeSize - lineWidth, cubeSize - lineWidth);
-                await delay(150);
+                await delay(100);
             }
         }
     } else if (mode == '逐行式') {
         for (let y = 0; y < height; y += cubeSize) {
             for (let x = 0; x < width; x += cubeSize) {
                 ctx.fillRect(x, y, cubeSize - lineWidth, cubeSize - lineWidth);
-                await delay(150);
+                await delay(100);
             }
         }
     }
