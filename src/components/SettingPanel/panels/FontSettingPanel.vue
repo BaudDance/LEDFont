@@ -7,7 +7,7 @@ import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 const { fontSize, modeList, mode, color, fontFaces, fontFace, template } = useSettingStore();
-const { needText, fontTemeplates, fontTemeplate } = useFontCreator();
+const { needText, fontTemplates, fontTemplate } = useFontCreator();
 </script>
 
 <template>
@@ -61,13 +61,13 @@ const { needText, fontTemeplates, fontTemeplate } = useFontCreator();
     <div class="flex items-center font-bold ">
         <span>生成模板:</span>
         <div class="w-2"></div>
-        <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontTemeplate">
-            <option v-for="t in fontTemeplates" :value="t" :key="t.name">{{ t.name }}</option>
+        <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontTemplate">
+            <option v-for="t in fontTemplates" :value="t" :key="t.name">{{ t.name }}</option>
         </select>
     </div>
     <div class="h-2"></div>
     <div style="width: 40rem;">
-        <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="fontTemeplate.template"
+        <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="fontTemplate.template"
             :extensions="[cpp(), oneDark]" />
     </div>
     <div class="h-2"></div>

@@ -7,8 +7,8 @@ import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import { watchDebounced } from '@vueuse/core'
-const { fontSize, imageSize, modeList, mode, color, fontFaces, fontFace, template } = useSettingStore();
-const { sourceImg, imgThreshold } = useImageCreator();
+const { imageSize, modeList, mode, color } = useSettingStore();
+const { sourceImg, imgThreshold, imgTemplates, imgTemplate, imgName } = useImageCreator();
 
 const threshold = ref(imgThreshold.value)
 const proportional = ref(true) // 等比缩放
@@ -51,6 +51,8 @@ async function onUploadImg(event) {
             sourceImg.value = image;
         }
         image.src = e.target.result;
+        imgName.value = file.name.split('.')[0]
+        console.log('image:', file.name)
     }
 }
 watchDebounced(threshold, async () => {
@@ -61,10 +63,20 @@ watchDebounced(threshold, async () => {
 </script>
 
 <template>
-    <div class="font-bold ">目标图片:</div>
-    <div class="h-2"></div>
-    <input type="file" class="w-full max-w-xs file-input file-input-sm file-input-bordered file-input-success"
-        @change="onUploadImg" />
+    <div class="flex">
+        <div class="flex flex-col w-full">
+            <div class="font-bold ">目标图片:</div>
+            <div class="h-2"></div>
+            <input type="file" class="w-full max-w-xs file-input file-input-sm file-input-bordered file-input-success"
+                @change="onUploadImg" />
+        </div>
+        <div class="w-10"></div>
+        <div class="flex flex-col w-full">
+            <div class="font-bold ">图片名称:</div>
+            <div class="h-2"></div>
+            <input type="text" class="w-full max-w-xs input input-bordered input-sm" v-model="imgName" />
+        </div>
+    </div>
     <div class="h-5"></div>
 
     <div class="font-bold ">生成大小:</div>
@@ -109,10 +121,16 @@ watchDebounced(threshold, async () => {
         </div>
     </form>
     <div class="h-5"></div>
-    <div class="font-bold ">生成模板:</div>
+    <div class="flex items-center font-bold ">
+        <span>生成模板:</span>
+        <div class="w-2"></div>
+        <select class="w-full max-w-xs select select-bordered select-sm" v-model="imgTemplate">
+            <option v-for="t in imgTemplates" :value="t" :key="t.name">{{ t.name }}</option>
+        </select>
+    </div>
     <div class="h-2"></div>
     <div style="width: 40rem;">
-        <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="template"
+        <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="imgTemplate.template"
             :extensions="[cpp(), oneDark]" />
     </div>
     <div class="h-2"></div>

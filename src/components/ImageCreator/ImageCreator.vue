@@ -7,11 +7,12 @@ import { watchDebounced } from "@vueuse/core";
 const canvasRef = ref(null);
 const imgRef = ref(null);
 const { mode, color, imageSize } = useSettingStore();
-const { sourceImg, ledImg, imgThreshold } = useImageCreator();
+const { sourceImg, imgGlyph, imgThreshold } = useImageCreator();
 
 
 async function getGlyph() {
     let img = sourceImg.value;
+    if (!img) return;
     const width = imageSize.value.width;
     const height = imageSize.value.height;
     const canvas = canvasRef.value;
@@ -89,7 +90,7 @@ async function getGlyph() {
             res[i] = ~v & 0xff;
         });
     }
-    ledImg.value = {
+    imgGlyph.value = {
         width: imageSize.value.width,
         height: imageSize.value.height,
         data: res,

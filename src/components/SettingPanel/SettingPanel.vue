@@ -13,6 +13,6 @@ const { sourceList, source, mode } = useSettingStore();
         </div>
         <div class="h-4"></div>
         <FontSettingPanel v-if="source == '字体取模'" />
-        <ImageSettingPanel class="" v-else-if="source == '图片取模'" />
+        <ImageSettingPanel v-else-if="source == '图片取模'" />
     </div>
 </template>

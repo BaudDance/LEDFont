@@ -6,13 +6,16 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import useFontCreator from "@/components/FontCreator/useFontCreator";
 import useSettingStore from "@/stores/useSettingStore";
+import useImageCreator from "@/components/ImageCreator/useImageCreator";
 import useResult from "./useResult";
 const parent = ref(null)
 const codePanel = ref(null)
 const { width, height } = useElementSize(parent)
-const { fonts, fontTemeplate } = useFontCreator();
-const { fontSize } = useSettingStore();
-const { glyphWithUTF8Array, fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUTF8Len, fontGlyphCode, } = useResult();
+const { fonts, fontTemplate } = useFontCreator();
+const { fontSize, source, imageSize } = useSettingStore();
+const { fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUTF8Len, fontGlyphCode, imgGlyphCode } = useResult();
+const { imgTemplate, imgGlyph, imgName } = useImageCreator();
+
 const code = ref("");
 
 watch([width, height], () => {
@@ -22,8 +25,17 @@ watch([width, height], () => {
 })
 
 
-watch([fonts, fontTemeplate], () => {
-    let t = fontTemeplate.value.template;
+watch([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName], () => {
+    if (source.value == '字体取模') {
+        showFontCode()
+    } else {
+        showImageCode()
+    }
+})
+
+
+function showFontCode() {
+    let t = fontTemplate.value.template;
     t = t.replaceAll('/*_w_*/', fontSize.value.width)
     t = t.replaceAll('/*_h_*/', fontSize.value.height)
     t = t.replaceAll('/*_font_len_*/', fontGlyphLen.value)
@@ -32,8 +44,15 @@ watch([fonts, fontTemeplate], () => {
     t = t.replaceAll('/*_font_data_utf8_*/', fontGlyphWithUTF8Code.value)
     t = t.replaceAll('/*_len_*/', Object.keys(fonts.value).length)
     code.value = t;
-})
-
+}
+function showImageCode() {
+    let t = imgTemplate.value.template;
+    t = t.replaceAll('/*_w_*/', imageSize.value.width)
+    t = t.replaceAll('/*_h_*/', imageSize.value.height)
+    t = t.replaceAll('/*_img_name_*/', imgName.value)
+    t = t.replaceAll('/*_img_data_*/', imgGlyphCode.value)
+    code.value = t;
+}
 </script>
 
 <template>

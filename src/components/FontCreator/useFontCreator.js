@@ -4,7 +4,7 @@ import useSettingStore from "@/stores/useSettingStore";
 export default createGlobalState(() => {
   const needText = ref("波特律动");
   const { mode, color, fontSize } = useSettingStore();
-  const fontTemeplates = ref([
+  const fontTemplates = ref([
     {
       name: "波特律动OLED驱动",
       template:
@@ -15,7 +15,7 @@ export default createGlobalState(() => {
       template: "{\n/*_font_data_*/\n}",
     },
   ]);
-  const fontTemeplate = ref(fontTemeplates.value[0]);
+  const fontTemplate = ref(fontTemplates.value[0]);
   const fonts = ref({});
-  return { needText, fonts, fontTemeplates, fontTemeplate };
+  return { needText, fonts, fontTemplates, fontTemplate };
 });

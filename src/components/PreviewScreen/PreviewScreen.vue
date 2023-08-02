@@ -9,7 +9,7 @@ const showCanvasParent = ref(null);
 const { width, height } = useElementSize(showCanvasParent);
 
 const { fonts } = useFontCreator();
-const { ledImg } = useImageCreator()
+const { imgGlyph } = useImageCreator()
 const { mode, source } = useSettingStore();
 
 const screenSize = { width: 128, height: 64 };
@@ -160,7 +160,7 @@ function showImagePreview() {
             });
         }
     }
-    drawImage(ledImg.value, 0, 0)
+    drawImage(imgGlyph.value, 0, 0)
     // 画网格
     ctx.fillStyle = "#000";
     for (let i = 0; i < width.value; i += size) {
@@ -171,7 +171,7 @@ function showImagePreview() {
     }
 }
 
-watch([width, fonts, ledImg], () => {
+watch([width, fonts, imgGlyph], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
     showCanvas.value.height = width.value / screenSize.width * screenSize.height;
