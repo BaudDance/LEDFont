@@ -11,21 +11,15 @@ dependencies:
   '@codemirror/theme-one-dark':
     specifier: ^6.1.2
     version: 6.1.2
-  '@highlightjs/vue-plugin':
-    specifier: ^2.1.0
-    version: 2.1.0(highlight.js@11.8.0)(vue@3.3.4)
   '@techstark/opencv-js':
-    specifier: 4.8.0-release.2
-    version: 4.8.0-release.2
+    specifier: 4.8.0-release.3
+    version: 4.8.0-release.3
   '@vueuse/core':
     specifier: ^10.2.1
     version: 10.2.1(vue@3.3.4)
   codemirror:
     specifier: ^6.0.1
     version: 6.0.1(@lezer/common@1.0.3)
-  highlight.js:
-    specifier: ^11.8.0
-    version: 11.8.0
   vue:
     specifier: ^3.3.4
     version: 3.3.4
@@ -362,16 +356,6 @@ packages:
     dev: true
     optional: true
 
-  /@highlightjs/vue-plugin@2.1.0(highlight.js@11.8.0)(vue@3.3.4):
-    resolution: {integrity: sha512-E+bmk4ncca+hBEYRV2a+1aIzIV0VSY/e5ArjpuSN9IO7wBJrzUE2u4ESCwrbQD7sAy+jWQjkV5qCCWgc+pu7CQ==}
-    peerDependencies:
-      highlight.js: ^11.0.1
-      vue: ^3
-    dependencies:
-      highlight.js: 11.8.0
-      vue: 3.3.4
-    dev: false
-
   /@jridgewell/gen-mapping@0.3.3:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
     engines: {node: '>=6.0.0'}
@@ -449,8 +433,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@techstark/opencv-js@4.8.0-release.2:
-    resolution: {integrity: sha512-CXPB7Q9lOIiuUXvM2kKkRTNH9vkpF8WByzNPEOBDJoE6Vx4qlG7EciY3w9t0VmoEToWK3HnqBOXsQDyeZvi/OA==}
+  /@techstark/opencv-js@4.8.0-release.3:
+    resolution: {integrity: sha512-GU+Lk1iTNXIaEu5w5n/Xdk9j5kBLYmE1puW0Cz0kCtNJxp6bugxwSVNt57v0XNqoDbqfdwSy5kyykRys32dfpw==}
     dependencies:
       mirada: 0.0.15
     transitivePeerDependencies:
@@ -947,11 +931,6 @@ packages:
     dependencies:
       function-bind: 1.1.1
     dev: true
-
-  /highlight.js@11.8.0:
-    resolution: {integrity: sha512-MedQhoqVdr0U6SSnWPzfiadUcDHfN/Wzq25AkXiQv9oiOO/sG0S7XkvpFIqWBl9Yq1UYyYOOVORs5UW2XlPyzg==}
-    engines: {node: '>=12.0.0'}
-    dev: false
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}

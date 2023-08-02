@@ -12,11 +12,9 @@
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@highlightjs/vue-plugin": "^2.1.0",
-    "@techstark/opencv-js": "4.8.0-release.2",
+    "@techstark/opencv-js": "4.8.0-release.3",
     "@vueuse/core": "^10.2.1",
     "codemirror": "^6.0.1",
-    "highlight.js": "^11.8.0",
     "vue": "^3.3.4",
     "vue-codemirror": "^6.1.1"
   },

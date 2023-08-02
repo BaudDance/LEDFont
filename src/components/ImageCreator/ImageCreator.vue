@@ -11,22 +11,31 @@ const { sourceImg, ledImg, imgThreshold } = useImageCreator();
 
 
 async function getGlyph() {
-
     let img = sourceImg.value;
-
+    const width = imageSize.value.width;
+    const height = imageSize.value.height;
     const canvas = canvasRef.value;
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvasRef.value.getContext("2d");
 
-    ctx.clearRect(0, 0, img.width, img.height) // 清除画布
-    ctx.drawImage(img, 0, 0, img.width, img.height)
-    const cv = await ccv;
-    let mat = cv.imread("inputImgCanvas");
-    let imgScaled = new cv.Mat();
-    cv.resize(mat, imgScaled, new cv.Size(imageSize.value.width, imageSize.value.height), cv.INTER_CUBIC);
-    cv.threshold(imgScaled, imgScaled, imgThreshold.value, 255, cv.THRESH_BINARY);
-    cv.imshow("outputImgCanvas", imgScaled);
+    ctx.clearRect(0, 0, width, height) // 清除画布
+    ctx.drawImage(img, 0, 0, width, height)
+
+    let canvasImg = ctx.getImageData(0, 0, width, height);
+    // 二值化
+    for (let i = 0; i < canvasImg.data.length; i += 4) {
+        const r = canvasImg.data[i];
+        const g = canvasImg.data[i + 1];
+        const b = canvasImg.data[i + 2];
+        const gray = ~~(r * 0.3 + g * 0.59 + b * 0.11);
+        const v = gray > imgThreshold.value ? 255 : 0;
+        canvasImg.data[i] = v;
+        canvasImg.data[i + 1] = v;
+        canvasImg.data[i + 2] = v;
+    }
+    ctx.putImageData(canvasImg, 0, 0);
+
     const res = [];
 
     if (mode.value == '列行式') {
@@ -35,7 +44,7 @@ async function getGlyph() {
             for (let j = 0; j < imageSize.value.width; j++) {
                 let v = 0;
                 for (let k = 0; k < 8; k++) {
-                    v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
+                    v += canvasImg.data[(i * 8 + k) * width * 4 + j * 4] === 255 ? 1 << k : 0;
                 }
                 res.push(v);
             }
@@ -46,7 +55,7 @@ async function getGlyph() {
             for (let j = 0; j < imageSize.value.height; j++) {
                 let v = 0;
                 for (let k = 0; k < 8; k++) {
-                    v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
+                    v += canvasImg.data[j * width * 4 + (i * 8 + k) * 4] === 255 ? 1 << k : 0;
                 }
                 res.push(v);
             }
@@ -57,7 +66,7 @@ async function getGlyph() {
             for (let i = 0; i < page; i++) {
                 let v = 0;
                 for (let k = 0; k < 8; k++) {
-                    v += imgScaled.ucharPtr(i * 8 + k, j)[0] === 255 ? 1 << k : 0;
+                    v += canvasImg.data[(i * 8 + k) * width * 4 + j * 4] === 255 ? 1 << k : 0;
                 }
                 res.push(v);
             }
@@ -68,7 +77,7 @@ async function getGlyph() {
             for (let i = 0; i < page; i++) {
                 let v = 0;
                 for (let k = 0; k < 8; k++) {
-                    v += imgScaled.ucharPtr(j, i * 8 + k)[0] === 255 ? 1 << k : 0;
+                    v += canvasImg.data[j * width * 4 + (i * 8 + k) * 4] === 255 ? 1 << k : 0;
                 }
                 res.push(v);
             }
@@ -85,16 +94,14 @@ async function getGlyph() {
         height: imageSize.value.height,
         data: res,
     };
-    const hex = res.map((v) => {
-        let s = v.toString(16);
-        if (s.length === 1) {
-            s = "0" + s;
-        }
-        return "0x" + s;
-    });
-    console.log("hex2: ", hex.join(", "));
-    mat.delete();
-    imgScaled.delete();
+    // const hex = res.map((v) => {
+    //     let s = v.toString(16);
+    //     if (s.length === 1) {
+    //         s = "0" + s;
+    //     }
+    //     return "0x" + s;
+    // });
+    // console.log("hex2: ", hex.join(", "));
 
 }
 
@@ -110,7 +117,7 @@ function canvasInit() {
 }
 
 onMounted(async () => {
-    canvasInit()
+    // canvasInit()
     watchDebounced([mode, color, sourceImg, imageSize, imgThreshold], async () => {
         getGlyph()
     }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
