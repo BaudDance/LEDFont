@@ -82,14 +82,12 @@ watchDebounced(threshold, async () => {
             </label>
         </div>
     </div>
-    <div class="h-2"></div>
 
     <div class="h-5"></div>
-
-    <div class="font-bold ">二值化阈值:</div>
+    <div class="flex justify-between font-bold"><span>二值化阈值:</span><span>{{ threshold }}</span></div>
     <div class="h-2"></div>
     <input type="range" min="0" max="256" class="range range-xs" v-model="threshold" />
-    <div>{{ threshold }}</div>
+    <div></div>
 
     <div class="h-5"></div>
     <div class="font-bold ">取模方式:</div>
@@ -116,5 +114,8 @@ watchDebounced(threshold, async () => {
     <div style="width: 40rem;">
         <codemirror :style="{ height: '100%', width: '100%', }" ref="templatePanel" v-model="template"
             :extensions="[cpp(), oneDark]" />
+    </div>
+    <div class="h-2"></div>
+    <div class="text-xs underline cursor-pointer underline-offset-4" onclick="template_syntax_modal.showModal()">查看模板语法
     </div>
 </template>
