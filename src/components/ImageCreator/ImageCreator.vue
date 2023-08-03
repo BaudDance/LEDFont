@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import * as ccv from "@techstark/opencv-js";
 import useSettingStore from "@/stores/useSettingStore";
 import useImageCreator from "./useImageCreator";
 import { watchDebounced } from "@vueuse/core";

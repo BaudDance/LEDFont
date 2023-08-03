@@ -1,6 +1,4 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useElementSize } from '@vueuse/core'
 import SettingPanel from "./components/SettingPanel/SettingPanel.vue";
 import FontCreator from "./components/FontCreator/FontCreator.vue";
 import PreviewScreen from "./components/PreviewScreen/PreviewScreen.vue";
@@ -12,7 +10,7 @@ import TemplateSyntaxModal from "./modals/TemplateSyntaxModal.vue";
 
 <template>
   <TemplateSyntaxModal />
-  <FontCreator class="absolute top-0 invisible" />
+  <!-- <FontCreator class="absolute top-0 invisible" /> -->
   <ImageCreator class="absolute top-0 invisible" />
   <div class="flex items-center justify-center h-screen">
     <div class="container relative flex 2xl:mx-56 aspect-video flex-nowrap" style="max-height: 90%;">
