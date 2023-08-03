@@ -26,7 +26,13 @@ const currentFontface = computed({
 </script>
 
 <template>
-    <div class="font-bold ">字体:</div>
+    <div class="flex items-baseline">
+        <div class="font-bold ">字体: </div>
+        <div class="w-3"></div>
+        <div v-if="!currentFontface.width & (fontSize.width < 20 || fontSize.height < 20)" class="text-xs text-yellow-500">
+            字符尺寸20以下推荐使用点阵字体
+        </div>
+    </div>
     <div class="h-2"></div>
     <div class="flex items-center gap-5">
         <select class="w-full max-w-xs select select-bordered select-sm" v-model="currentFontface">

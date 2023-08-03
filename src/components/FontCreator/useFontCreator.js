@@ -21,13 +21,13 @@ export default createGlobalState(() => {
   const fonts = ref({});
 
   const fontFaces = ref([
+    { name: "文泉驿·点阵字16", font: "wenquanyi_12pt", width: 16, height: 16 },
+    { name: "文泉驿·点阵字15", font: "wenquanyi_11pt", width: 15, height: 15 },
+    { name: "文泉驿·点阵字14", font: "wenquanyi_13px", width: 14, height: 14 },
+    { name: "文泉驿·点阵字13", font: "wenquanyi_10pt", width: 13, height: 13 },
+    { name: "文泉驿·点阵字12", font: "wenquanyi_9pt", width: 12, height: 12 },
     { name: "文泉驿·微米黑", font: "WenQuanDengKuanWeiMiHei" },
     { name: "阿里巴巴·普惠体", font: "Alibaba-PuHuiTi-Regular" },
-    { name: "文泉驿·点阵字12", font: "wenquanyi_9pt", width: 12, height: 12 },
-    { name: "文泉驿·点阵字13", font: "wenquanyi_10pt", width: 13, height: 13 },
-    { name: "文泉驿·点阵字14", font: "wenquanyi_13px", width: 14, height: 14 },
-    { name: "文泉驿·点阵字15", font: "wenquanyi_11pt", width: 15, height: 15 },
-    { name: "文泉驿·点阵字16", font: "wenquanyi_12pt", width: 16, height: 16 },
   ]);
 
   const fontFace = ref(fontFaces.value[0]);
