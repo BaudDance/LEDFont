@@ -4,6 +4,7 @@ import { useElementSize } from '@vueuse/core'
 import useFontCreator from "../FontCreator/useFontCreator";
 import useSettingStore from "@/stores/useSettingStore";
 import useImageCreator from "@/components/ImageCreator/useImageCreator";
+import usePreviewScreen from "./usePreviewScreen";
 const showCanvas = ref(null);
 const showCanvasParent = ref(null);
 const { width, height } = useElementSize(showCanvasParent);
@@ -12,7 +13,7 @@ const { fonts, needText } = useFontCreator();
 const { imgGlyph } = useImageCreator()
 const { mode, source } = useSettingStore();
 
-const screenSize = { width: 128, height: 64 };
+const { screenSize } = usePreviewScreen();
 
 function showFontPreview() {
     console.log('showPreview:fonts', fonts.value);
@@ -21,7 +22,7 @@ function showFontPreview() {
     ctx.fillStyle = "#000";
     // ctx.fillStyle = "#495028";
     ctx.fillRect(0, 0, width.value, height.value);
-    const size = width.value / screenSize.width;
+    const size = width.value / screenSize.value.width;
 
 
 
@@ -110,7 +111,7 @@ function showImagePreview() {
     // 背景
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, width.value, height.value);
-    const size = width.value / screenSize.width;
+    const size = width.value / screenSize.value.width;
 
     ctx.fillStyle = "#fff";
     function drawImage(image, x0, y0) {
@@ -177,7 +178,7 @@ function showImagePreview() {
 watch([width, fonts, imgGlyph], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
-    showCanvas.value.height = width.value / screenSize.width * screenSize.height;
+    showCanvas.value.height = width.value / screenSize.value.width * screenSize.value.height;
     if (source.value == '字体取模') {
         showFontPreview();
     } else if (source.value == '图片取模') {

@@ -3,7 +3,7 @@ import { createGlobalState } from "@vueuse/core";
 export default createGlobalState(() => {
   const sourceImg = ref();
   const imgGlyph = ref({});
-  const imgThreshold = ref(128);
+  const imgThreshold = ref(127);
   const imgName = ref("");
   const imgTemplates = ref([
     {

@@ -7,9 +7,10 @@ import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import { watchDebounced } from '@vueuse/core'
+import usePreviewScreen from '@/components/PreviewScreen/usePreviewScreen';
 const { imageSize, modeList, mode, color } = useSettingStore();
 const { sourceImg, imgThreshold, imgTemplates, imgTemplate, imgName } = useImageCreator();
-
+const { screenSize } = usePreviewScreen();
 const threshold = ref(imgThreshold.value)
 const proportional = ref(true) // 等比缩放
 const width = computed({
@@ -79,7 +80,14 @@ watchDebounced(threshold, async () => {
     </div>
     <div class="h-5"></div>
 
-    <div class="font-bold ">生成大小:</div>
+    <div class="flex items-baseline">
+        <div class="font-bold ">生成大小: </div>
+        <div class="w-3"></div>
+        <div v-if="imageSize.width > screenSize.width || imageSize.height > screenSize.height"
+            class="text-xs text-yellow-500">
+            生成尺寸已超过屏幕尺寸
+        </div>
+    </div>
     <div class="h-2"></div>
     <div class="flex items-center gap-5">
         <div>宽:</div>

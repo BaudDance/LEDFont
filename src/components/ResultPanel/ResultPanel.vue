@@ -8,6 +8,7 @@ import useFontCreator from "@/components/FontCreator/useFontCreator";
 import useSettingStore from "@/stores/useSettingStore";
 import useImageCreator from "@/components/ImageCreator/useImageCreator";
 import useResult from "./useResult";
+import { useClipboard } from "@vueuse/core";
 const parent = ref(null)
 const codePanel = ref(null)
 const { width, height } = useElementSize(parent)
@@ -17,6 +18,9 @@ const { fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUTF8Len, fontGlyphCode
 const { imgTemplate, imgGlyph, imgName } = useImageCreator();
 
 const code = ref("");
+
+const { copy } = useClipboard({ code })
+
 
 watch([width, height], () => {
     console.log('改变width.value', width.value);
@@ -56,9 +60,12 @@ function showImageCode() {
 </script>
 
 <template>
-    <div ref="parent" class="flex flex-row h-full overflow-auto bg-gray-400 ">
+    <div ref="parent" class="relative flex flex-row h-full overflow-auto bg-gray-400">
         <codemirror :style="{ height: '100%', width: '100%' }" class="flex-grow w-0" ref="codePanel" v-model="code"
             :extensions="[cpp(), oneDark]" />
+        <button class="absolute lowercase bottom-5 right-5 btn btn-circle btn-sm btn-success" @click="copy(code)">
+            <span class="text-xs">复制</span>
+        </button>
     </div>
 </template>
 
