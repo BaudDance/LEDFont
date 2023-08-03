@@ -1,7 +1,11 @@
-# Vue 3 + Vite
+<p >
+    <h2 align="center">波特律动LED取模助手</h2>
+    <h2 align="center">BaudDance LED Assistant</h2>
+</p>
+<p align="center">
+    <em>可以在浏览器中直接使用的LED字模/图模数据生成软件.</em>
+</p>
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+在线使用: [波特律动LED取模助手](https://led.baud-dance.com/)
+## TODO
+- 直接生成LED驱动库
