@@ -1,26 +1,52 @@
 <script setup>
-import { ref } from 'vue';
 import ModeItem from '../components/ModeItem.vue';
 import useSettingStore from '@/stores/useSettingStore';
 import useFontCreator from '@/components/FontCreator/useFontCreator';
 import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
-const { fontSize, modeList, mode, color, fontFaces, fontFace, template } = useSettingStore();
-const { needText, fontTemplates, fontTemplate } = useFontCreator();
+import { computed } from 'vue';
+const { fontSize, modeList, mode, color, } = useSettingStore();
+const { needText, fontTemplates, fontTemplate, fontFaces, fontFace } = useFontCreator();
+
+const currentFontface = computed({
+    get() {
+        return fontFace.value;
+    },
+    set(v) {
+        if (v.width) {
+            fontSize.value = {
+                width: v.width,
+                height: v.height,
+            }
+        }
+        fontFace.value = v;
+    }
+})
 </script>
 
 <template>
     <div class="font-bold ">字体:</div>
     <div class="h-2"></div>
     <div class="flex items-center gap-5">
-        <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontFace">
-            <option v-for="f in fontFaces" :value="f" :key="f.family">{{ f.family }}</option>
+        <select class="w-full max-w-xs select select-bordered select-sm" v-model="currentFontface">
+            <option v-for="f in fontFaces" :value="f" :key="f.family">{{ f.name }}</option>
         </select>
         <div>宽:</div>
-        <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm" />
+        <div v-if="currentFontface.width" class="w-full tooltip tooltip-bottom tooltip-warning" data-tip="点阵字体无法调节大小">
+            <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm" disabled />
+        </div>
+        <div v-else class="w-full">
+            <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm"
+                :disabled="currentFontface.width" />
+        </div>
         <div>高:</div>
-        <input type="number" v-model="fontSize.height" class="w-full max-w-xs input input-bordered input-sm" />
+        <div v-if="currentFontface.height" class="w-full tooltip tooltip-bottom tooltip-warning" data-tip="点阵字体无法调节大小">
+            <input type="number" v-model="fontSize.height" class="w-full max-w-xs input input-bordered input-sm" disabled />
+        </div>
+        <div v-else class="w-full">
+            <input type="number" v-model="fontSize.height" class="w-full max-w-xs input input-bordered input-sm" />
+        </div>
     </div>
     <div class="h-5"></div>
     <div class="font-bold ">取模方式:</div>

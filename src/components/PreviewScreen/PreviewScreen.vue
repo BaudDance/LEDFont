@@ -8,7 +8,7 @@ const showCanvas = ref(null);
 const showCanvasParent = ref(null);
 const { width, height } = useElementSize(showCanvasParent);
 
-const { fonts } = useFontCreator();
+const { fonts, needText } = useFontCreator();
 const { imgGlyph } = useImageCreator()
 const { mode, source } = useSettingStore();
 
@@ -28,6 +28,7 @@ function showFontPreview() {
     ctx.fillStyle = "#fff";
     // ctx.fillStyle = "#ff8040";
     function drawFont(font, x0, y0) {
+        if (!font) return;
         const w = font.width;
         const h = font.height;
         if (mode.value == '列行式') {
@@ -81,8 +82,10 @@ function showFontPreview() {
     let line = 0;
     let x0 = 0;
     let y0 = 0;
-    Object.keys(fonts.value).forEach((key, index) => {
+    console.log('needText', needText.value.split(""))
+    needText.value.split("").forEach((key, index) => {
         const font = fonts.value[key];
+        if (!font) return;
         drawFont(font, x0, y0);
         x0 += font.width * size;
         if (x0 + font.width * size > width.value) {

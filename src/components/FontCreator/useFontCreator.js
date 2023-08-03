@@ -5,12 +5,12 @@ import { getFontGlyph } from "../../apis/font";
 import { watchDebounced } from "@vueuse/core";
 export default createGlobalState(() => {
   const needText = ref("波特律动");
-  const { mode, color, fontSize, fontFace } = useSettingStore();
+  const { mode, color, fontSize } = useSettingStore();
   const fontTemplates = ref([
     {
       name: "波特律动OLED驱动",
       template:
-        "const unsigned char zh_/*_w_*/x/*_h_*/[][/*_font_len_*/] = {\n/*_font_data_utf8_*/\n};\nconst ZHFont zhfont/*_w_*/x/*_h_*/ = {/*_w_*/, /*_h_*/, (const unsigned char *)/*_w_*/x/*_h_*/, /*_len_*/, &font24x12};",
+        "const unsigned char zh/*_w_*/x/*_h_*/[][/*_font_len_utf8_*/] = {\n/*_font_data_utf8_*/\n};\nconst ZHFont zhfont/*_w_*/x/*_h_*/ = {/*_w_*/, /*_h_*/, (const unsigned char *)zh/*_w_*/x/*_h_*/, /*_len_*/, &font24x12};",
     },
     {
       name: "普通字模数据",
@@ -20,19 +20,31 @@ export default createGlobalState(() => {
   const fontTemplate = ref(fontTemplates.value[0]);
   const fonts = ref({});
 
+  const fontFaces = ref([
+    { name: "文泉驿·微米黑", font: "WenQuanDengKuanWeiMiHei" },
+    { name: "阿里巴巴·普惠体", font: "Alibaba-PuHuiTi-Regular" },
+    { name: "文泉驿·点阵字12", font: "wenquanyi_9pt", width: 12, height: 12 },
+    { name: "文泉驿·点阵字13", font: "wenquanyi_10pt", width: 13, height: 13 },
+    { name: "文泉驿·点阵字14", font: "wenquanyi_13px", width: 14, height: 14 },
+    { name: "文泉驿·点阵字15", font: "wenquanyi_11pt", width: 15, height: 15 },
+    { name: "文泉驿·点阵字16", font: "wenquanyi_12pt", width: 16, height: 16 },
+  ]);
+
+  const fontFace = ref(fontFaces.value[0]);
+
   watchDebounced(
     [needText, fontSize, mode, color, fontFace],
     async () => {
+      const needList = [...new Set(needText.value.split(""))];
       const res = await getFontGlyph(
-        "Alibaba-PuHuiTi-Regular",
+        fontFace.value.font,
         fontSize.value.width,
         fontSize.value.height,
-        needText.value,
+        needList.join(),
         mode.value,
         color.value
       );
       console.log(res.data);
-      const needList = [...new Set(needText.value.split(""))];
       const a = {};
       needList.forEach((item) => {
         a[item] = {
@@ -45,5 +57,5 @@ export default createGlobalState(() => {
     },
     { immediate: true, deep: true, debounce: 100, maxWait: 300 }
   );
-  return { needText, fonts, fontTemplates, fontTemplate };
+  return { needText, fonts, fontTemplates, fontTemplate, fontFaces, fontFace };
 });
