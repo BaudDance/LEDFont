@@ -69,7 +69,7 @@ watchDebounced(threshold, async () => {
             <div class="font-bold ">目标图片:</div>
             <div class="h-2"></div>
             <input type="file" class="w-full max-w-xs file-input file-input-sm file-input-bordered file-input-success"
-                @change="onUploadImg" />
+                @change="onUploadImg" accept="image/gif,image/jpeg,image/jpg,image/png" />
         </div>
         <div class="w-10"></div>
         <div class="flex flex-col w-full">
