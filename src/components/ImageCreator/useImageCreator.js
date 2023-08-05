@@ -9,7 +9,7 @@ export default createGlobalState(() => {
     {
       name: "波特律动OLED驱动",
       template:
-        "const uint8_t /*_img_name_*/Data[] = {\n/*_img_data_*/\n};\nconst Image /*_img_name_*/ = {/*_w_*/, /*_h_*/, /*_img_name_*/Data};",
+        "const uint8_t /*_img_name_*/Data[] = {\n/*_img_data_*/\n};\nconst Image /*_img_name_*/Img = {/*_w_*/, /*_h_*/, /*_img_name_*/Data};",
     },
     {
       name: "普通图模数据",
