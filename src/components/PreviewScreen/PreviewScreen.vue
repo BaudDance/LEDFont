@@ -55,25 +55,26 @@ function showFontPreview() {
                 }
             });
         } else if (mode.value == '逐列式') {
+            const pageNum = Math.ceil(h / 8);
             font.data.forEach((item, index) => {
-                console.log('index', index, 'item', item);
-                const row = Math.floor((index * 8) % w);
-                const col = Math.floor((index * 8) / h);
+                const page = index % pageNum;
+                const col = Math.floor(index / pageNum);
                 for (let i = 0; i < 8; i++) {
                     const bit = (item >> i) & 0x01;
-                    if (bit && ((row * 8 + i) < h)) {
-                        ctx.fillRect(x0 + col * size, y0 + (row * 8 + i) * size, size, size);
+                    if (bit && ((page * 8 + i) < h)) {
+                        ctx.fillRect(x0 + col * size, y0 + (page * 8 + i) * size, size, size);
                     }
                 }
             });
         } else if (mode.value == '逐行式') {
+            const pageNum = Math.ceil(w / 8);
             font.data.forEach((item, index) => {
-                const row = Math.floor((index * 8) % h);
-                const col = Math.floor((index * 8) / w);
+                const page = index % pageNum;
+                const row = Math.floor(index / pageNum);
                 for (let i = 0; i < 8; i++) {
                     const bit = (item >> i) & 0x01;
-                    if (bit && ((col * 8 + i) < w)) {
-                        ctx.fillRect(x0 + (col * 8 + i) * size, y0 + row * size, size, size);
+                    if (bit && ((page * 8 + i) < w)) {
+                        ctx.fillRect(x0 + (page * 8 + i) * size, y0 + row * size, size, size);
                     }
                 }
             });
@@ -140,25 +141,26 @@ function showImagePreview() {
                 }
             });
         } else if (mode.value == '逐列式') {
+            const pageNum = Math.ceil(h / 8);
             image.data.forEach((item, index) => {
-                console.log('index', index, 'item', item);
-                const row = Math.floor((index * 8) % w);
-                const col = Math.floor((index * 8) / h);
+                const page = index % pageNum;
+                const col = Math.floor(index / pageNum);
                 for (let i = 0; i < 8; i++) {
                     const bit = (item >> i) & 0x01;
-                    if (bit && ((row * 8 + i) < h)) {
-                        ctx.fillRect(x0 + col * size, y0 + (row * 8 + i) * size, size, size);
+                    if (bit && ((page * 8 + i) < h)) {
+                        ctx.fillRect(x0 + col * size, y0 + (page * 8 + i) * size, size, size);
                     }
                 }
             });
         } else if (mode.value == '逐行式') {
+            const pageNum = Math.ceil(w / 8);
             image.data.forEach((item, index) => {
-                const row = Math.floor((index * 8) % h);
-                const col = Math.floor((index * 8) / w);
+                const page = index % pageNum;
+                const row = Math.floor(index / pageNum);
                 for (let i = 0; i < 8; i++) {
                     const bit = (item >> i) & 0x01;
-                    if (bit && ((col * 8 + i) < w)) {
-                        ctx.fillRect(x0 + (col * 8 + i) * size, y0 + row * size, size, size);
+                    if (bit && ((page * 8 + i) < w)) {
+                        ctx.fillRect(x0 + (page * 8 + i) * size, y0 + row * size, size, size);
                     }
                 }
             });
@@ -175,7 +177,7 @@ function showImagePreview() {
     }
 }
 
-watch([width, fonts, imgGlyph], () => {
+watch([width, fonts, imgGlyph, source], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
     showCanvas.value.height = width.value / screenSize.value.width * screenSize.value.height;
