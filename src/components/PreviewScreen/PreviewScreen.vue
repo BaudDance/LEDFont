@@ -116,6 +116,7 @@ function showImagePreview() {
 
     ctx.fillStyle = "#fff";
     function drawImage(image, x0, y0) {
+        if (!image || !image.data) return;
         const w = image.width;
         const h = image.height;
         if (mode.value == '列行式') {

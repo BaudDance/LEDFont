@@ -8,6 +8,7 @@ const canvas = ref(null);
 const lineWidth = 0.3;
 
 async function draw() {
+    if (canvas.value == null) return;
     const ctx = canvas.value.getContext("2d");
     const width = canvas.value.width;
     const height = canvas.value.height;
