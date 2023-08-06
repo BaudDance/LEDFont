@@ -14,8 +14,8 @@ import TemplateSyntaxModal from "./modals/TemplateSyntaxModal.vue";
   <ImageCreator class="absolute top-0 invisible" />
   <div class="flex items-center justify-center h-screen ">
     <div class="container relative flex 2xl:mx-56 aspect-video flex-nowrap" style="max-height: 90%;">
-      <div class="absolute -top-8 tabs">
-        <a class="tab tab-lifted tab-active">字模生成</a>
+      <div class="absolute -top-8 tabs ">
+        <a class=" tab tab-lifted tab-active">字模生成</a>
         <div class="tooltip tooltip-error" data-tip="敬请期待">
           <a class="tab tab-lifted">OLED驱动库</a>
         </div>
