@@ -5,6 +5,7 @@ import PreviewScreen from "./components/PreviewScreen/PreviewScreen.vue";
 import ResultPanel from "./components/ResultPanel/ResultPanel.vue";
 import ImageCreator from "./components/ImageCreator/ImageCreator.vue";
 import TemplateSyntaxModal from "./modals/TemplateSyntaxModal.vue";
+import Online from "./components/Online/Online.vue";
 import useSettingStore from "./stores/useSettingStore";
 import { watch } from "vue";
 import LibListPanel from "./components/LibListPanel/LibListPanel.vue";
@@ -28,6 +29,8 @@ watch(software, () => {
         <div class="tooltip tooltip-error" data-tip="这可是个好东西">
           <a class="tab tab-lifted" :class="software == '驱动库' ? 'tab-active' : ''" @click="software = '驱动库'">驱动库</a>
         </div>
+        <a class="tab tab-lifted" href="https://serial.keysking.com" target="_blank">串口助手🔗</a>
+
       </div>
       <div v-if="software == '取模助手'" class="overflow-y-auto border-2 border-gray-400 border-solid rounded-xl basis-1/2">
         <SettingPanel />
@@ -46,7 +49,9 @@ watch(software, () => {
       <div v-if="software == '驱动库'" class="p-5 border-2 border-gray-400 border-solid rounded-xl basis-2/3">
         <LibDetailPanel />
       </div>
-
+      <div class="absolute -bottom-6">
+        <Online />
+      </div>
     </div>
   </div>
 </template>
