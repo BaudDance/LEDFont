@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://led.baud-dance.com/api";
-// baseURL = "/api";
+const baseURL = import.meta.env.VITE_BACKEND_UAL;
 
 export async function getFontGlyph(font, width, height, text, mode, color) {
   return await axios.get(`${baseURL}/glyph`, {

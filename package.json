@@ -15,10 +15,14 @@
     "@vueuse/core": "^10.2.1",
     "axios": "^1.4.0",
     "codemirror": "^6.0.1",
+    "highlight.js": "^11.8.0",
+    "marked": "^7.0.0",
+    "marked-highlight": "^2.0.3",
     "vue": "^3.3.4",
     "vue-codemirror": "^6.1.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@vitejs/plugin-vue": "^4.2.3",
     "autoprefixer": "^10.4.14",
     "daisyui": "^3.5.0",

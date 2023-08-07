@@ -21,6 +21,9 @@ export default createGlobalState(() => {
   // 低位在前 | 高位在前
   const endian = ref("低位在前");
 
+  // 取模助手 | 驱动库
+  const software = ref("取模助手");
+
   return {
     sourceList,
     source,
@@ -30,5 +33,6 @@ export default createGlobalState(() => {
     mode,
     color,
     endian,
+    software,
   };
 });

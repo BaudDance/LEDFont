@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { useElementSize } from '@vueuse/core'
+import { useElementSize, watchDebounced } from '@vueuse/core'
 import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
@@ -13,7 +13,7 @@ const parent = ref(null)
 const codePanel = ref(null)
 const { width, height } = useElementSize(parent)
 const { fonts, fontTemplate } = useFontCreator();
-const { fontSize, source, imageSize } = useSettingStore();
+const { fontSize, source, imageSize, software } = useSettingStore();
 const { fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUTF8Len, fontGlyphCode, imgGlyphCode } = useResult();
 const { imgTemplate, imgGlyph, imgName } = useImageCreator();
 
@@ -23,19 +23,18 @@ const { copy } = useClipboard({ code })
 
 
 watch([width, height], () => {
-    console.log('改变width.value', width.value);
     parent.value.style.width = width.value + 'px'
     parent.value.style.height = height.value + 'px'
 })
 
 
-watch([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName], () => {
+watchDebounced([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName], () => {
     if (source.value == '字体取模') {
         showFontCode()
     } else {
         showImageCode()
     }
-})
+}, { immediate: true, deep: true, debounce: 100, maxWait: 300 })
 
 
 function showFontCode() {

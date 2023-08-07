@@ -16,14 +16,12 @@ const { mode, source } = useSettingStore();
 const { screenSize } = usePreviewScreen();
 
 function showFontPreview() {
-    console.log('showPreview:fonts', fonts.value);
     const ctx = showCanvas.value.getContext("2d");
     // 背景
     ctx.fillStyle = "#000";
     // ctx.fillStyle = "#495028";
     ctx.fillRect(0, 0, width.value, height.value);
     const size = width.value / screenSize.value.width;
-
 
 
     ctx.fillStyle = "#fff";
