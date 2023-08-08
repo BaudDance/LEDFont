@@ -61,7 +61,7 @@ const readme = computed(() => {
                 <a class="tab tab-lifted tab-active">Readme</a>
                 <!-- <a class="tab tab-lifted">font.c</a> -->
             </div>
-            <div class="w-full overflow-auto prose max-w-none" v-html="readme"></div>
+            <div class="w-full h-full overflow-auto prose max-w-none" v-html="readme"></div>
         </div>
     </div>
 </template>
