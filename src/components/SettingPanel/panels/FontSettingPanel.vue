@@ -58,19 +58,19 @@ const currentFontface = computed({
     <div class="font-bold ">取模方式:</div>
     <div class="h-2"></div>
     <div class="flex justify-between">
-        <ModeItem v-for="m in modeList" :mode="m" :color="color" :selected="m == mode" @click="mode = m" />
+        <ModeItem v-for="m in modeList" :mode="m" :color="color" :selected="m == mode" @click="mode = m" :key="m + color" />
     </div>
     <div class="h-5"></div>
     <div class="font-bold ">阴阳码:</div>
     <div class="h-2"></div>
     <form class="flex gap-10">
-        <div class="flex w-40" @click="color = '阴码'">
-            <input type="radio" name="radio-5" class="radio radio-success" :checked="color == '阴码'" />
-            <div class="mx-2">阴码</div>
-        </div>
         <div class="flex w-40" @click="color = '阳码'">
             <input type="radio" name="radio-5" class="radio radio-success" :checked="color == '阳码'" />
             <div class="mx-2">阳码</div>
+        </div>
+        <div class="flex w-40" @click="color = '阴码'">
+            <input type="radio" name="radio-5" class="radio radio-success" :checked="color == '阴码'" />
+            <div class="mx-2">阴码</div>
         </div>
     </form>
     <!-- <div class="font-bold ">取模走向:</div>

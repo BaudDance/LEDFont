@@ -16,7 +16,7 @@ export default createGlobalState(() => {
   const mode = ref("列行式");
 
   // 阴码 | 阳码
-  const color = ref("阴码");
+  const color = ref("阳码");
 
   // 低位在前 | 高位在前
   const endian = ref("低位在前");

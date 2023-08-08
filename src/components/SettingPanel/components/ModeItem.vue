@@ -15,7 +15,7 @@ async function draw() {
     const cubeSize = width / 12;
     console.log(width, height);
     // 背景
-    ctx.fillStyle = color == '阴码' ? "#000" : "#fff";
+    ctx.fillStyle = color == '阴码' ? "#fff" : "#000";
     ctx.fillRect(0, 0, 60, 60);
     // 画网格
     ctx.fillStyle = "#0F0";
@@ -25,7 +25,7 @@ async function draw() {
     for (let i = 0; i < height; i += cubeSize) {
         ctx.fillRect(0, i - (lineWidth / 2), width, lineWidth);
     }
-    ctx.fillStyle = color == '阴码' ? "#fff" : "#000";
+    ctx.fillStyle = color == '阴码' ? "#000" : "#fff";
     const y0 = 0;
     const x0 = 0;
     if (mode == "列行式") {
