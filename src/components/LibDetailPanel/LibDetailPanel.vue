@@ -45,7 +45,14 @@ const readme = computed(() => {
                             <div>{{ libDetail.desc }}</div>
                             <div>作者: {{ libDetail.author.join(' ') }}</div>
                         </div>
-                        <button class="w-24 btn btn-success btn-sm" @click="downloadLibrary(libDetail.id)">下载</button>
+                        <div class="flex items-center gap-2">
+                            <button class="w-24 btn btn-success btn-sm" @click="downloadLibrary(libDetail.id)">下载</button>
+                            <a :href="libDetail.url" target="_blank" v-if="libDetail.url">
+                                <label class="btn btn-square btn-ghost">
+                                    <img src="/github.svg" class="w-7 h-7" />
+                                </label>
+                            </a>
+                        </div>
                     </div>
 
                 </div>
