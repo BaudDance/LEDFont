@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { createGlobalState } from "@vueuse/core";
 export default createGlobalState(() => {
   const sourceImg = ref();
@@ -17,6 +17,7 @@ export default createGlobalState(() => {
     },
   ]);
   const imgTemplate = ref(imgTemplates.value[0]);
+  const mask = ref({});
   return {
     sourceImg,
     imgGlyph,
@@ -24,5 +25,6 @@ export default createGlobalState(() => {
     imgTemplates,
     imgTemplate,
     imgName,
+    mask,
   };
 });

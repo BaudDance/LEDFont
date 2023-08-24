@@ -6,7 +6,7 @@ import { watchDebounced } from "@vueuse/core";
 const canvasRef = ref(null);
 const imgRef = ref(null);
 const { mode, color, imageSize } = useSettingStore();
-const { sourceImg, imgGlyph, imgThreshold } = useImageCreator();
+const { sourceImg, imgGlyph, imgThreshold, mask } = useImageCreator();
 
 
 async function getGlyph() {
@@ -23,6 +23,7 @@ async function getGlyph() {
     ctx.drawImage(img, 0, 0, width, height)
 
     let canvasImg = ctx.getImageData(0, 0, width, height);
+    console.log('canvasImg.data', canvasImg)
     // 二值化
     for (let i = 0; i < canvasImg.data.length; i += 4) {
         const r = canvasImg.data[i];
@@ -34,7 +35,18 @@ async function getGlyph() {
         canvasImg.data[i + 1] = v;
         canvasImg.data[i + 2] = v;
     }
-    ctx.putImageData(canvasImg, 0, 0);
+    // ctx.putImageData(canvasImg, 0, 0);
+
+    // 使用mask改变
+    Object.keys(mask.value).forEach(i => {
+        if (mask.value[i]) {
+            const [x, y] = i.split(',')
+            console.log('x, y', x, y)
+            const old = canvasImg.data[y * imageSize.value.width * 4 + x * 4]
+            canvasImg.data[y * imageSize.value.width * 4 + x * 4] = old === 255 ? 0 : 255
+        }
+
+    })
 
     const res = [];
 
@@ -118,19 +130,15 @@ function canvasInit() {
 
 onMounted(async () => {
     // canvasInit()
-    watchDebounced([mode, color, sourceImg, imageSize, imgThreshold], async () => {
+    watchDebounced([sourceImg, imageSize, imgThreshold], async () => {
+        getGlyph()
+        mask.value = {}
+    }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
+    watchDebounced([mode, color, mask], async () => {
         getGlyph()
     }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
-
 });
-async function download() {
-    // canvasRef.value.toBlob((blob) => {
-    //     const a = document.createElement("a");
-    //     a.href = URL.createObjectURL(blob);
-    //     a.download = "font.bmp";
-    //     a.click();
-    // });
-}
+
 </script>
 
 <template>

@@ -10,7 +10,7 @@ const showCanvasParent = ref(null);
 const { width, height } = useElementSize(showCanvasParent);
 
 const { fonts, needText } = useFontCreator();
-const { imgGlyph } = useImageCreator()
+const { imgGlyph, mask } = useImageCreator()
 const { mode, source } = useSettingStore();
 
 const { screenSize } = usePreviewScreen();
@@ -186,10 +186,46 @@ watch([width, fonts, imgGlyph, source], () => {
         showImagePreview();
     }
 });
+
+async function canvasClicked(e) {
+    if (source.value == '图片取模') {
+        const x = Math.floor(e.offsetX / width.value * screenSize.value.width);
+        const y = Math.floor(e.offsetY / showCanvas.value.height * screenSize.value.height);
+        console.log(mask.value)
+        mask.value[`${x},${y}`] = !mask.value[`${x},${y}`];
+        console.log('clicled', x, y)
+        console.log('aaaa', y, e.offsetY, height.value, screenSize.value.height)
+        console.log('mask', mask.value);
+    }
+}
+// let isMouseDown = false;
+// let last;
+// async function canvasMouseDown(e) {
+//     isMouseDown = true;
+// }
+// async function canvasMouseUp(e) {
+//     isMouseDown = false;
+// }
+// async function canvasMouseMove(e) {
+//     if (isMouseDown) {
+//         const x = Math.floor(e.offsetX / width.value * screenSize.value.width);
+//         const y = Math.floor(e.offsetY / showCanvas.value.height * screenSize.value.height);
+//         if (last && last.x == x && last.y == y) return;
+//         last = { x, y };
+//         console.log(mask)
+//         mask[`${x},${y}`] = !mask[`${x},${y}`];
+//         console.log('clicled', x, y)
+//         console.log('aaaa', y, e.offsetY, height.value, screenSize.value.height)
+//         console.log('mask', mask);
+//     }
+// }
 </script>
 
 <template>
     <div ref="showCanvasParent">
-        <canvas ref="showCanvas" id="showCanvas"></canvas>
+        <canvas ref="showCanvas" id="showCanvas" @click="canvasClicked" @mousedown="canvasMouseDown"
+            @mouseup="canvasMouseUp" @mousemove="canvasMouseMove"></canvas>
+        <!-- <canvas ref="showCanvas" id="showCanvas" @click="canvasClicked" @mousedown="canvasMouseDown"
+            @mouseup="canvasMouseUp" @mousemove="canvasMouseMove"></canvas> -->
     </div>
 </template>
