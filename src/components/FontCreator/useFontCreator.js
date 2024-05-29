@@ -10,7 +10,7 @@ export default createGlobalState(() => {
     {
       name: "波特律动OLED驱动",
       template:
-        "const uint8_t zh/*_w_*/x/*_h_*/[][/*_font_len_utf8_*/] = {\n/*_font_data_utf8_*/\n};\nconst Font font/*_w_*/x/*_h_*/ = {/*_w_*/, /*_h_*/, (const uint8_t *)zh/*_w_*/x/*_h_*/, /*_len_*/, &afont16x8};",
+        "const uint8_t zh/*_w_*/x/*_h_*/[][/*_font_len_utf8_*/] = {\n/*_font_data_utf8_*/\n};\nconst Font font/*_w_*/x/*_h_*/ = {.w =/*_w_*/, .h = /*_h_*/, .chars = (const uint8_t *)zh/*_w_*/x/*_h_*/,.len = sizeof(zh/*_w_*/x/*_h_*/)//*_font_len_utf8_*/, .ascii = &afont16x8};",
     },
     {
       name: "普通字模数据",
