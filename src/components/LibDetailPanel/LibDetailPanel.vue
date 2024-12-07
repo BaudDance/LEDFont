@@ -44,6 +44,8 @@ const readme = computed(() => {
                         <div>
                             <div>{{ libDetail.desc }}</div>
                             <div>作者: {{ libDetail.author.join(' ') }}</div>
+                            <div v-for="l in libDetail.label" class="badge badge-outline mr-2">{{ l }}</div>
+
                         </div>
                         <div class="flex items-center gap-2">
                             <button class="w-24 btn btn-success btn-sm" @click="downloadLibrary(libDetail.id)">下载</button>
