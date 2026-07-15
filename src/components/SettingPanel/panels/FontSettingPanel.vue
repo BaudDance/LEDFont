@@ -6,7 +6,7 @@ import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import { computed } from 'vue';
-const { fontSize, modeList, mode, color, } = useSettingStore();
+const { fontSize, modeList, mode, hFlip, vFlip, color } = useSettingStore();
 const { needText, fontTemplates, fontTemplate, fontFaces, fontFace } = useFontCreator();
 
 const currentFontface = computed({
@@ -60,6 +60,19 @@ const currentFontface = computed({
     <div class="flex justify-between">
         <ModeItem v-for="m in modeList" :mode="m" :color="color" :selected="m == mode" @click="mode = m" :key="m + color" />
     </div>
+    <div class="h-5"></div>
+    <div class="font-bold ">反转方式:</div>
+    <div class="h-2"></div>
+    <form class="flex gap-10">
+        <label class="flex items-center cursor-pointer gap-2">
+            <input type="checkbox" class="checkbox checkbox-success checkbox-sm" v-model="hFlip" />
+            <span class="text-sm">水平对称反转</span>
+        </label>
+        <label class="flex items-center cursor-pointer gap-2">
+            <input type="checkbox" class="checkbox checkbox-success checkbox-sm" v-model="vFlip" />
+            <span class="text-sm">垂直对称反转</span>
+        </label>
+    </form>
     <div class="h-5"></div>
     <div class="font-bold ">阴阳码:</div>
     <div class="h-2"></div>

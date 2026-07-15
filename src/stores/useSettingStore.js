@@ -24,6 +24,10 @@ export default createGlobalState(() => {
   // 取模助手 | 驱动库
   const software = ref("取模助手");
 
+  //镜像反转
+  const hFlip = ref(false);
+  const vFlip = ref(false);
+
   return {
     sourceList,
     source,
@@ -31,6 +35,8 @@ export default createGlobalState(() => {
     imageSize,
     modeList,
     mode,
+    hFlip,
+    vFlip,
     color,
     endian,
     software,
