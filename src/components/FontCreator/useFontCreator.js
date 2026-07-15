@@ -1,11 +1,12 @@
 import { ref } from "vue";
 import { createGlobalState } from "@vueuse/core";
 import useSettingStore from "@/stores/useSettingStore";
+import { flipGlyphData } from "../../utils/flip";
 import { getFontGlyph } from "../../apis/font";
 import { watchDebounced } from "@vueuse/core";
 export default createGlobalState(() => {
   const needText = ref("波特律动");
-  const { mode, color, fontSize } = useSettingStore();
+  const { mode, hFlip, vFlip, color, fontSize } = useSettingStore();
   const fontTemplates = ref([
     {
       name: "波特律动OLED驱动",
@@ -33,7 +34,7 @@ export default createGlobalState(() => {
   const fontFace = ref(fontFaces.value[0]);
 
   watchDebounced(
-    [needText, fontSize, mode, color, fontFace],
+    [needText, fontSize, mode, hFlip, vFlip, color, fontFace],
     async () => {
       const needList = [...new Set(needText.value.split(""))];
       const res = await getFontGlyph(
@@ -45,6 +46,10 @@ export default createGlobalState(() => {
         color.value
       );
       console.log(res.data);
+      if (!res.data || !res.data.data) {
+        console.error('API返回数据异常', res)
+        return
+      }
       const a = {};
       needList.forEach((item) => {
         a[item] = {
@@ -53,6 +58,19 @@ export default createGlobalState(() => {
           data: res.data.data[item],
         };
       });
+      // 应用水平/垂直翻转
+      if (hFlip.value || vFlip.value) {
+        Object.keys(a).forEach((key) => {
+          a[key].data = flipGlyphData(
+            a[key].data,
+            a[key].width,
+            a[key].height,
+            mode.value,
+            hFlip.value,
+            vFlip.value
+          )
+        })
+      }
       fonts.value = a;
     },
     { immediate: true, deep: true, debounce: 100, maxWait: 300 }

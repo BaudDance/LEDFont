@@ -5,7 +5,7 @@ import useImageCreator from "./useImageCreator";
 import { watchDebounced } from "@vueuse/core";
 const canvasRef = ref(null);
 const imgRef = ref(null);
-const { mode, color, imageSize } = useSettingStore();
+const { mode, hFlip, vFlip, color, imageSize } = useSettingStore();
 const { sourceImg, imgGlyph, imgThreshold, mask } = useImageCreator();
 
 
@@ -49,6 +49,26 @@ async function getGlyph() {
     })
 
     const res = [];
+
+    // 像素级翻转（在取模转换之前）
+    if (hFlip.value) {
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width / 2; x++) {
+                const a = (y * width + x) * 4
+                const b = (y * width + (width - 1 - x)) * 4
+                ;[canvasImg.data[a], canvasImg.data[b]] = [canvasImg.data[b], canvasImg.data[a]]
+            }
+        }
+    }
+    if (vFlip.value) {
+        for (let y = 0; y < height / 2; y++) {
+            for (let x = 0; x < width; x++) {
+                const a = (y * width + x) * 4
+                const b = ((height - 1 - y) * width + x) * 4
+                ;[canvasImg.data[a], canvasImg.data[b]] = [canvasImg.data[b], canvasImg.data[a]]
+            }
+        }
+    }
 
     if (mode.value == '列行式') {
         const page = ~~((imageSize.value.height + 7) / 8);
@@ -134,7 +154,7 @@ onMounted(async () => {
         getGlyph()
         mask.value = {}
     }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
-    watchDebounced([mode, color, mask], async () => {
+    watchDebounced([mode, hFlip, vFlip, color, mask], async () => {
         getGlyph()
     }, { immediate: true, deep: true, debounce: 100, maxWait: 300 });
 });

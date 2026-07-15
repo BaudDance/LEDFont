@@ -8,7 +8,7 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import { watchDebounced } from '@vueuse/core'
 import usePreviewScreen from '@/components/PreviewScreen/usePreviewScreen';
-const { imageSize, modeList, mode, color } = useSettingStore();
+const { imageSize, modeList, mode, hFlip, vFlip, color } = useSettingStore();
 const { sourceImg, imgThreshold, imgTemplates, imgTemplate, imgName } = useImageCreator();
 const { screenSize } = usePreviewScreen();
 const threshold = ref(imgThreshold.value)
@@ -124,6 +124,19 @@ watchDebounced(threshold, async () => {
     <div class="flex justify-between">
         <ModeItem v-for="m in modeList" :mode="m" :color="color" :selected="m == mode" @click="mode = m" :key="m + color" />
     </div>
+    <div class="h-5"></div>
+    <div class="font-bold ">反转方式:</div>
+    <div class="h-2"></div>
+    <form class="flex gap-10">
+        <label class="flex items-center cursor-pointer gap-2">
+            <input type="checkbox" class="checkbox checkbox-success checkbox-sm" v-model="hFlip" />
+            <span class="text-sm">水平对称反转</span>
+        </label>
+        <label class="flex items-center cursor-pointer gap-2">
+            <input type="checkbox" class="checkbox checkbox-success checkbox-sm" v-model="vFlip" />
+            <span class="text-sm">垂直对称反转</span>
+        </label>
+    </form>
     <div class="h-5"></div>
     <div class="font-bold ">阴阳码:</div>
     <div class="h-2"></div>
