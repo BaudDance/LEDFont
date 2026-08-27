@@ -14,3 +14,11 @@ export async function getFontGlyph(font, width, height, text, mode, color) {
     },
   });
 }
+
+export async function getU8g2Fonts() {
+  return await axios.get(`${baseURL}/u8g2/fonts`);
+}
+
+export async function generateU8g2Font(payload, signal) {
+  return await axios.post(`${baseURL}/u8g2/font`, payload, { signal });
+}

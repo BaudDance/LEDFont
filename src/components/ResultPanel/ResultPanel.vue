@@ -5,6 +5,7 @@ import { Codemirror } from 'vue-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { cpp } from '@codemirror/lang-cpp'
 import useFontCreator from "@/components/FontCreator/useFontCreator";
+import useU8g2Font from "@/components/FontCreator/useU8g2Font";
 import useSettingStore from "@/stores/useSettingStore";
 import useImageCreator from "@/components/ImageCreator/useImageCreator";
 import useResult from "./useResult";
@@ -13,7 +14,8 @@ const parent = ref(null)
 const codePanel = ref(null)
 const { width, height } = useElementSize(parent)
 const { fonts, fontTemplate } = useFontCreator();
-const { fontSize, source, imageSize, software } = useSettingStore();
+const { result: u8g2Result } = useU8g2Font();
+const { fontSize, source, imageSize, software, fontFormat } = useSettingStore();
 const { fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUTF8Len, fontGlyphCode, imgGlyphCode } = useResult();
 const { imgTemplate, imgGlyph, imgName } = useImageCreator();
 
@@ -28,7 +30,7 @@ watch([width, height], () => {
 })
 
 
-watchDebounced([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName], () => {
+watchDebounced([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName, fontFormat, u8g2Result], () => {
     if (source.value == '字体取模') {
         showFontCode()
     } else {
@@ -38,6 +40,10 @@ watchDebounced([source, fonts, fontTemplate, imgTemplate, imgGlyph, imgName], ()
 
 
 function showFontCode() {
+    if (fontFormat.value === 'u8g2') {
+        code.value = u8g2Result.value?.c_source || '';
+        return;
+    }
     let t = fontTemplate.value.template;
     t = t.replaceAll('/*_w_*/', fontSize.value.width)
     t = t.replaceAll('/*_h_*/', fontSize.value.height)

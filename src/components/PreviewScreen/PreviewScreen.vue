@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useElementSize } from '@vueuse/core'
 import useFontCreator from "../FontCreator/useFontCreator";
+import useU8g2Font from "../FontCreator/useU8g2Font";
 import useSettingStore from "@/stores/useSettingStore";
 import useImageCreator from "@/components/ImageCreator/useImageCreator";
 import usePreviewScreen from "./usePreviewScreen";
@@ -10,12 +11,17 @@ const showCanvasParent = ref(null);
 const { width, height } = useElementSize(showCanvasParent);
 
 const { fonts, needText } = useFontCreator();
+const { result: u8g2Result } = useU8g2Font();
 const { imgGlyph, mask } = useImageCreator()
-const { mode, source } = useSettingStore();
+const { mode, source, fontFormat } = useSettingStore();
 
 const { screenSize } = usePreviewScreen();
 
 function showFontPreview() {
+    if (fontFormat.value === 'u8g2') {
+        showU8g2Preview();
+        return;
+    }
     const ctx = showCanvas.value.getContext("2d");
     // 背景
     ctx.fillStyle = "#000";
@@ -105,6 +111,64 @@ function showFontPreview() {
     }
 }
 
+function showU8g2Preview() {
+    const ctx = showCanvas.value.getContext("2d");
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, width.value, height.value);
+    const preview = u8g2Result.value?.preview;
+    if (!preview) return;
+
+    const scale = width.value / screenSize.value.width;
+    const glyphs = new Map(preview.glyphs.map((glyph) => [glyph.char, glyph]));
+    const decoded = new Map();
+    ctx.fillStyle = "#fff";
+
+    function bitmap(glyph) {
+        if (!decoded.has(glyph.codepoint)) {
+            const binary = atob(glyph.bitmap);
+            decoded.set(glyph.codepoint, Uint8Array.from(binary, (char) => char.charCodeAt(0)));
+        }
+        return decoded.get(glyph.codepoint);
+    }
+
+    let x = 0;
+    let baseline = preview.ascent;
+    for (const character of preview.text) {
+        if (character === '\n') {
+            x = 0;
+            baseline += preview.line_height;
+            continue;
+        }
+        const glyph = glyphs.get(character);
+        if (!glyph) continue;
+        const advance = Math.max(0, glyph.advance);
+        if (x > 0 && x + Math.max(advance, glyph.x_offset + glyph.width) > screenSize.value.width) {
+            x = 0;
+            baseline += preview.line_height;
+        }
+        const left = x + glyph.x_offset;
+        const top = baseline - glyph.y_offset - glyph.height;
+        const data = bitmap(glyph);
+        for (let row = 0; row < glyph.height; row++) {
+            for (let col = 0; col < glyph.width; col++) {
+                const bit = row * glyph.width + col;
+                if ((data[Math.floor(bit / 8)] >> (7 - bit % 8)) & 1) {
+                    ctx.fillRect((left + col) * scale, (top + row) * scale, scale, scale);
+                }
+            }
+        }
+        x += advance;
+    }
+
+    ctx.fillStyle = "#000";
+    for (let index = 0; index < width.value; index += scale) {
+        ctx.fillRect(index, 0, 1.6, height.value);
+    }
+    for (let index = 0; index < height.value; index += scale) {
+        ctx.fillRect(0, index, width.value, 1.6);
+    }
+}
+
 function showImagePreview() {
     const ctx = showCanvas.value.getContext("2d");
     // 背景
@@ -176,7 +240,7 @@ function showImagePreview() {
     }
 }
 
-watch([width, fonts, imgGlyph, source], () => {
+watch([width, height, fonts, imgGlyph, source, fontFormat, u8g2Result], () => {
     console.log(width.value, height.value);
     showCanvas.value.width = width.value;
     showCanvas.value.height = width.value / screenSize.value.width * screenSize.value.height;

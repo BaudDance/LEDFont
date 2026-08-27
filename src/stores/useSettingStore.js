@@ -5,6 +5,8 @@ export default createGlobalState(() => {
   const sourceList = ["字体取模", "图片取模"];
   // 字体取模 or 图片取模
   const source = ref("字体取模");
+  // 传统字模保持为默认值，压缩字模使用独立的 U8g2 服务链路。
+  const fontFormat = ref("traditional");
   // 生成字体大小
   const fontSize = ref({ width: 16, height: 16 });
 
@@ -27,6 +29,7 @@ export default createGlobalState(() => {
   return {
     sourceList,
     source,
+    fontFormat,
     fontSize,
     imageSize,
     modeList,

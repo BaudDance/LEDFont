@@ -5,7 +5,7 @@ import { getFontGlyph } from "../../apis/font";
 import { watchDebounced } from "@vueuse/core";
 export default createGlobalState(() => {
   const needText = ref("波特律动");
-  const { mode, color, fontSize } = useSettingStore();
+  const { mode, color, fontSize, fontFormat, source } = useSettingStore();
   const fontTemplates = ref([
     {
       name: "波特律动OLED驱动",
@@ -33,9 +33,10 @@ export default createGlobalState(() => {
   const fontFace = ref(fontFaces.value[0]);
 
   watchDebounced(
-    [needText, fontSize, mode, color, fontFace],
+    [needText, fontSize, mode, color, fontFace, fontFormat, source],
     async () => {
-      const needList = [...new Set(needText.value.split(""))];
+      if (fontFormat.value !== "traditional" || source.value !== "字体取模") return;
+      const needList = [...new Set(Array.from(needText.value))];
       const res = await getFontGlyph(
         fontFace.value.font,
         fontSize.value.width,
