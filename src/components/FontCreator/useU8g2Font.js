@@ -1,13 +1,14 @@
 import { computed, ref, watch } from "vue";
 import { createGlobalState, watchDebounced } from "@vueuse/core";
-import { generateU8g2Font, getU8g2Fonts } from "@/apis/font";
+import { generateU8g2Font } from "@/apis/font";
 import useFontCreator from "./useFontCreator";
+import useFontCatalog from "./useFontCatalog";
 import useSettingStore from "@/stores/useSettingStore";
 
 export default createGlobalState(() => {
   const { needText } = useFontCreator();
   const { fontFormat, source } = useSettingStore();
-  const fonts = ref([]);
+  const { fonts, error: catalogError } = useFontCatalog();
   const font = ref(null);
   const size = ref(16);
   const sizeInput = ref("16");
@@ -62,17 +63,17 @@ export default createGlobalState(() => {
     }
   });
 
-  async function loadFonts() {
-    try {
-      const response = await getU8g2Fonts();
-      fonts.value = response.data.data;
-      if (!font.value && fonts.value.length) {
-        font.value = fonts.value[0];
-      }
-    } catch (requestError) {
-      error.value = { error: requestError.response?.data?.error || "无法读取压缩字模字体列表" };
-    }
-  }
+  watch(
+    fonts,
+    (available) => {
+      if (!font.value && available.length) font.value = available[0];
+    },
+    { immediate: true }
+  );
+
+  watch(catalogError, (value) => {
+    if (value) error.value = value;
+  });
 
   watchDebounced(
     [font, size, needText, arrayName, fontFormat, source],
@@ -105,8 +106,6 @@ export default createGlobalState(() => {
     },
     { debounce: 400, maxWait: 1200, deep: true }
   );
-
-  loadFonts();
 
   return {
     fonts,

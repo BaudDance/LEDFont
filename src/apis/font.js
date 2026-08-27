@@ -2,16 +2,16 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BACKEND_UAL;
 
-export async function getFontGlyph(font, width, height, text, mode, color) {
+export async function getFontGlyph(font, size, text, mode, color, signal) {
   return await axios.get(`${baseURL}/glyph`, {
     params: {
       font,
-      width,
-      height,
+      size,
       text,
       mode,
       color,
     },
+    signal,
   });
 }
 

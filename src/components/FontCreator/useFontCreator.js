@@ -1,11 +1,13 @@
-import { ref } from "vue";
-import { createGlobalState } from "@vueuse/core";
+import { computed, ref, watch } from "vue";
+import { createGlobalState, watchDebounced } from "@vueuse/core";
 import useSettingStore from "@/stores/useSettingStore";
-import { getFontGlyph } from "../../apis/font";
-import { watchDebounced } from "@vueuse/core";
+import { getFontGlyph } from "@/apis/font";
+import useFontCatalog from "./useFontCatalog";
+
 export default createGlobalState(() => {
   const needText = ref("波特律动");
   const { mode, color, fontSize, fontFormat, source } = useSettingStore();
+  const { fonts: fontFaces, error: catalogError } = useFontCatalog();
   const fontTemplates = ref([
     {
       name: "波特律动OLED驱动",
@@ -19,44 +21,148 @@ export default createGlobalState(() => {
   ]);
   const fontTemplate = ref(fontTemplates.value[0]);
   const fonts = ref({});
+  const fontFace = ref(null);
+  const sizeInput = ref("16");
+  const error = ref(null);
+  const loading = ref(false);
+  const sizeRevision = ref(0);
+  let controller = null;
+  let requestSequence = 0;
 
-  const fontFaces = ref([
-    { name: "文泉驿·点阵字16", font: "wenquanyi_12pt", width: 16, height: 16 },
-    { name: "文泉驿·点阵字15", font: "wenquanyi_11pt", width: 15, height: 15 },
-    { name: "文泉驿·点阵字14", font: "wenquanyi_13px", width: 14, height: 14 },
-    { name: "文泉驿·点阵字13", font: "wenquanyi_10pt", width: 13, height: 13 },
-    { name: "文泉驿·点阵字12", font: "wenquanyi_9pt", width: 12, height: 12 },
-    { name: "文泉驿·微米黑", font: "WenQuanDengKuanWeiMiHei" },
-    { name: "阿里巴巴·普惠体", font: "Alibaba-PuHuiTi-Regular" },
-  ]);
+  const fixedSize = computed(() => fontFace.value?.sizes?.[0] ?? null);
+  const sizeRange = computed(() => fontFace.value?.size ?? null);
 
-  const fontFace = ref(fontFaces.value[0]);
+  function clearOutput() {
+    fonts.value = {};
+  }
+
+  function commitSize() {
+    if (fixedSize.value !== null) {
+      fontSize.value = fixedSize.value;
+      sizeInput.value = String(fixedSize.value);
+      return;
+    }
+    const value = Number(sizeInput.value);
+    if (
+      Number.isInteger(value) &&
+      sizeRange.value &&
+      value >= sizeRange.value.min &&
+      value <= sizeRange.value.max
+    ) {
+      fontSize.value = value;
+      sizeRevision.value += 1;
+      error.value = null;
+    } else {
+      controller?.abort();
+      controller = null;
+      requestSequence += 1;
+      loading.value = false;
+      clearOutput();
+      error.value = {
+        error: `字号必须是 ${sizeRange.value?.min ?? 8}–${sizeRange.value?.max ?? 64} 的整数`,
+      };
+    }
+  }
+
+  watch(
+    fontFaces,
+    (available) => {
+      if (!fontFace.value && available.length) fontFace.value = available[0];
+    },
+    { immediate: true }
+  );
+
+  watch(fontFace, () => {
+    if (fixedSize.value !== null) {
+      fontSize.value = fixedSize.value;
+      sizeInput.value = String(fixedSize.value);
+    } else if (sizeRange.value) {
+      const current = Number(sizeInput.value);
+      const next = Number.isInteger(current)
+        ? Math.min(sizeRange.value.max, Math.max(sizeRange.value.min, current))
+        : 16;
+      fontSize.value = next;
+      sizeInput.value = String(next);
+    }
+  });
+
+  watch(catalogError, (value) => {
+    if (value) {
+      error.value = value;
+      clearOutput();
+    }
+  });
 
   watchDebounced(
-    [needText, fontSize, mode, color, fontFace, fontFormat, source],
+    [needText, fontSize, sizeRevision, mode, color, fontFace, fontFormat, source],
     async () => {
-      if (fontFormat.value !== "traditional" || source.value !== "字体取模") return;
-      const needList = [...new Set(Array.from(needText.value))];
-      const res = await getFontGlyph(
-        fontFace.value.font,
-        fontSize.value.width,
-        fontSize.value.height,
-        needList.join(),
-        mode.value,
-        color.value
-      );
-      console.log(res.data);
-      const a = {};
-      needList.forEach((item) => {
-        a[item] = {
-          width: fontSize.value.width,
-          height: fontSize.value.height,
-          data: res.data.data[item],
-        };
-      });
-      fonts.value = a;
+      controller?.abort();
+      controller = null;
+      const sequence = ++requestSequence;
+      if (fontFormat.value !== "traditional" || source.value !== "字体取模" || !fontFace.value) {
+        loading.value = false;
+        return;
+      }
+
+      const normalized = needText.value.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+      const needList = [...new Set(Array.from(normalized).filter((char) => char !== "\n"))];
+      clearOutput();
+      error.value = null;
+      if (!needList.length) {
+        loading.value = false;
+        return;
+      }
+
+      const requestController = new AbortController();
+      controller = requestController;
+      loading.value = true;
+      try {
+        const response = await getFontGlyph(
+          fontFace.value.id,
+          fontSize.value,
+          needList.join(""),
+          mode.value,
+          color.value,
+          requestController.signal
+        );
+        if (sequence !== requestSequence) return;
+        if (response.data.code !== 200) {
+          error.value = { error: response.data.error || "传统字模生成失败" };
+          return;
+        }
+        const generated = {};
+        needList.forEach((char) => {
+          generated[char] = {
+            width: fontSize.value,
+            height: fontSize.value,
+            data: response.data.data[char],
+          };
+        });
+        fonts.value = generated;
+      } catch (requestError) {
+        if (requestError.code === "ERR_CANCELED" || sequence !== requestSequence) return;
+        error.value = requestError.response?.data || { error: "传统字模生成失败" };
+        clearOutput();
+      } finally {
+        if (sequence === requestSequence) loading.value = false;
+      }
     },
-    { immediate: true, deep: true, debounce: 100, maxWait: 300 }
+    { immediate: true, deep: true, debounce: 400, maxWait: 1200 }
   );
-  return { needText, fonts, fontTemplates, fontTemplate, fontFaces, fontFace };
+
+  return {
+    needText,
+    fonts,
+    fontTemplates,
+    fontTemplate,
+    fontFaces,
+    fontFace,
+    sizeInput,
+    fixedSize,
+    sizeRange,
+    error,
+    loading,
+    commitSize,
+    clearOutput,
+  };
 });

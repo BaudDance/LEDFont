@@ -8,17 +8,13 @@ const utf8Encoder = new TextEncoder();
 
 export default createGlobalState(() => {
   const { fonts } = useFontCreator();
-  const { fontSize, imageSize, mode } = useSettingStore();
+  const { fontSize, imageSize } = useSettingStore();
   const { imgGlyph } = useImageCreator();
 
   // 字模占用的字节数
-  const fontGlyphLen = computed(() => {
-    if (mode.value == "列行式" || mode.value == "逐列式") {
-      return fontSize.value.width * Math.floor((fontSize.value.height + 7) / 8);
-    } else {
-      return Math.floor((fontSize.value.width + 7) / 8) * fontSize.value.height;
-    }
-  });
+  const fontGlyphLen = computed(
+    () => fontSize.value * Math.floor((fontSize.value + 7) / 8)
+  );
   // 字模占用的字节数
   const fontGlyphWithUTF8Len = computed(() => fontGlyphLen.value + 4);
 

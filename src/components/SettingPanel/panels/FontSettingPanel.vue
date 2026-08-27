@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue';
 import { Codemirror } from 'vue-codemirror';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { cpp } from '@codemirror/lang-cpp';
@@ -9,30 +8,30 @@ import useFontCreator from '@/components/FontCreator/useFontCreator';
 import useU8g2Font from '@/components/FontCreator/useU8g2Font';
 
 const { fontSize, modeList, mode, color, fontFormat } = useSettingStore();
-const { needText, fontTemplates, fontTemplate, fontFaces, fontFace } = useFontCreator();
+const {
+    needText,
+    fontTemplates,
+    fontTemplate,
+    fontFaces,
+    fontFace,
+    sizeInput: traditionalSizeInput,
+    fixedSize: traditionalFixedSize,
+    sizeRange: traditionalSizeRange,
+    error: traditionalError,
+    loading: traditionalLoading,
+    commitSize: commitTraditionalSize,
+} = useFontCreator();
 const {
     fonts: u8g2Fonts,
     font: u8g2Font,
     sizeInput,
     arrayName,
-    error,
-    loading,
+    error: u8g2Error,
+    loading: u8g2Loading,
     fixedSize,
     sizeRange,
     commitSize,
 } = useU8g2Font();
-
-const currentFontface = computed({
-    get() {
-        return fontFace.value;
-    },
-    set(value) {
-        if (value.width) {
-            fontSize.value = { width: value.width, height: value.height };
-        }
-        fontFace.value = value;
-    },
-});
 </script>
 
 <template>
@@ -46,29 +45,24 @@ const currentFontface = computed({
         <div class="flex items-baseline">
             <div class="font-bold">字体: </div>
             <div class="w-3"></div>
-            <div v-if="!currentFontface.width && (fontSize.width < 20 || fontSize.height < 20)"
+            <div v-if="traditionalFixedSize === null && fontSize < 20"
                 class="text-xs text-yellow-500">
                 字符尺寸20以下推荐使用点阵字体
             </div>
         </div>
         <div class="h-2"></div>
         <div class="flex items-center gap-5">
-            <select class="w-full max-w-xs select select-bordered select-sm" v-model="currentFontface">
-                <option v-for="fontItem in fontFaces" :value="fontItem" :key="fontItem.font">{{ fontItem.name }}</option>
+            <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontFace">
+                <option v-for="fontItem in fontFaces" :value="fontItem" :key="fontItem.id">{{ fontItem.name }}</option>
             </select>
-            <div>宽:</div>
-            <div v-if="currentFontface.width" class="w-full tooltip tooltip-bottom tooltip-warning" data-tip="点阵字体无法调节大小">
-                <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm" disabled />
-            </div>
-            <div v-else class="w-full">
-                <input type="number" v-model="fontSize.width" class="w-full max-w-xs input input-bordered input-sm" />
-            </div>
-            <div>高:</div>
-            <div v-if="currentFontface.height" class="w-full tooltip tooltip-bottom tooltip-warning" data-tip="点阵字体无法调节大小">
-                <input type="number" v-model="fontSize.height" class="w-full max-w-xs input input-bordered input-sm" disabled />
-            </div>
-            <div v-else class="w-full">
-                <input type="number" v-model="fontSize.height" class="w-full max-w-xs input input-bordered input-sm" />
+            <div class="font-bold whitespace-nowrap">字号:</div>
+            <input type="number" v-model="traditionalSizeInput"
+                class="w-full max-w-xs input input-bordered input-sm"
+                :disabled="traditionalFixedSize !== null"
+                :min="traditionalSizeRange?.min" :max="traditionalSizeRange?.max" step="1"
+                @change="commitTraditionalSize" @blur="commitTraditionalSize" @keyup.enter="commitTraditionalSize" />
+            <div v-if="traditionalSizeRange" class="text-xs text-gray-500 whitespace-nowrap">
+                {{ traditionalSizeRange.min }}–{{ traditionalSizeRange.max }}
             </div>
         </div>
         <div class="h-5"></div>
@@ -94,7 +88,13 @@ const currentFontface = computed({
         <div class="h-5"></div>
         <div class="font-bold">需求文字:</div>
         <div class="h-2"></div>
-        <textarea v-model="needText" class="textarea textarea-bordered"></textarea>
+        <textarea v-model="needText" class="textarea textarea-bordered" maxlength="4096"></textarea>
+        <div v-if="traditionalLoading" class="mt-3 text-sm text-info">
+            正在生成传统字模；首次使用该字体字号时会先建立完整缓存，请稍候…
+        </div>
+        <div v-if="traditionalError" class="p-3 mt-3 text-sm rounded-lg bg-error/10 text-error">
+            {{ traditionalError.error || '传统字模生成失败' }}
+        </div>
         <div class="h-5"></div>
         <div class="flex items-center font-bold">
             <span>生成模板:</span>
@@ -138,13 +138,13 @@ const currentFontface = computed({
         <input v-model="arrayName" class="w-full input input-bordered input-sm" maxlength="64"
             placeholder="留空则由服务端生成" />
 
-        <div v-if="loading" class="mt-4 text-sm text-info">
+        <div v-if="u8g2Loading" class="mt-4 text-sm text-info">
             正在生成压缩字模；首次使用该字体变体时会先建立完整缓存，请稍候…
         </div>
-        <div v-if="error" class="p-3 mt-4 text-sm rounded-lg bg-error/10 text-error">
-            <div>{{ error.error || '压缩字模生成失败' }}</div>
-            <ul v-if="error.details?.missing" class="mt-2 ml-5 list-disc">
-                <li v-for="item in error.details.missing" :key="item.codepoint">
+        <div v-if="u8g2Error" class="p-3 mt-4 text-sm rounded-lg bg-error/10 text-error">
+            <div>{{ u8g2Error.error || '压缩字模生成失败' }}</div>
+            <ul v-if="u8g2Error.details?.missing" class="mt-2 ml-5 list-disc">
+                <li v-for="item in u8g2Error.details.missing" :key="item.codepoint">
                     {{ item.character }}（{{ item.codepoint }}，{{ item.reason }}）
                 </li>
             </ul>

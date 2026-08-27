@@ -26,13 +26,13 @@ const { glyphWithUTF8Array, fontGlyphWithUTF8Code, fontGlyphLen, fontGlyphWithUT
                             <td>/*_w_*/</td>
                             <td>生成字/图模的像素宽度</td>
                             <td>
-                                {{ source == '字体取模' ? fontSize.width : imageSize.width }}
+                                {{ source == '字体取模' ? fontSize : imageSize.width }}
                             </td>
                         </tr>
                         <tr>
                             <td>/*_h_*/</td>
                             <td>生成字/图模的像素高度</td>
-                            <td> {{ source == '字体取模' ? fontSize.height : imageSize.height }}
+                            <td> {{ source == '字体取模' ? fontSize : imageSize.height }}
                             </td>
                         </tr>
                         <tr v-if="source == '字体取模'">

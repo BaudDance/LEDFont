@@ -7,8 +7,8 @@ export default createGlobalState(() => {
   const source = ref("字体取模");
   // 传统字模保持为默认值，压缩字模使用独立的 U8g2 服务链路。
   const fontFormat = ref("traditional");
-  // 生成字体大小
-  const fontSize = ref({ width: 16, height: 16 });
+  // 传统字模使用单一字号，输出固定为字号乘字号。
+  const fontSize = ref(16);
 
   // 生成图片的大小
   const imageSize = ref({ width: 128, height: 64 });

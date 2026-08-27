@@ -44,9 +44,13 @@ function showFontCode() {
         code.value = u8g2Result.value?.c_source || '';
         return;
     }
+    if (!Object.keys(fonts.value).length) {
+        code.value = '';
+        return;
+    }
     let t = fontTemplate.value.template;
-    t = t.replaceAll('/*_w_*/', fontSize.value.width)
-    t = t.replaceAll('/*_h_*/', fontSize.value.height)
+    t = t.replaceAll('/*_w_*/', fontSize.value)
+    t = t.replaceAll('/*_h_*/', fontSize.value)
     t = t.replaceAll('/*_font_len_*/', fontGlyphLen.value)
     t = t.replaceAll('/*_font_len_utf8_*/', fontGlyphWithUTF8Len.value)
     t = t.replaceAll('/*_font_data_*/', fontGlyphCode.value)
