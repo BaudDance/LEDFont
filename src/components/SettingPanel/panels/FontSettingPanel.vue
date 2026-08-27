@@ -32,37 +32,62 @@ const {
     sizeRange,
     commitSize,
 } = useU8g2Font();
+
+const fontOptionLabel = (font) =>
+    font.description ? `${font.name} — ${font.description}` : font.name;
 </script>
 
 <template>
-    <div class="tabs tabs-boxed mb-5">
-        <a class="tab" :class="fontFormat === 'traditional' ? 'tab-active' : ''"
-            @click="fontFormat = 'traditional'">传统字模</a>
-        <a class="tab" :class="fontFormat === 'u8g2' ? 'tab-active' : ''" @click="fontFormat = 'u8g2'">压缩字模</a>
+    <div class="flex items-center gap-5 mb-5 ml-3 border-b border-base-content/10">
+        <button type="button" class="pb-2 -mb-px text-sm transition-colors border-b-2"
+            :class="fontFormat === 'traditional'
+                ? 'font-semibold '
+                : 'border-transparent text-base-content/50 hover:text-base-content'"
+            :aria-pressed="fontFormat === 'traditional'" @click="fontFormat = 'traditional'">
+            传统字模
+        </button>
+        <button type="button" class="pb-2 -mb-px text-sm transition-colors border-b-2"
+            :class="fontFormat === 'u8g2'
+                ? 'font-semibold '
+                : 'border-transparent text-base-content/50 hover:text-base-content'"
+            :aria-pressed="fontFormat === 'u8g2'" @click="fontFormat = 'u8g2'">
+            压缩字模
+        </button>
     </div>
 
     <template v-if="fontFormat === 'traditional'">
-        <div class="flex items-baseline">
-            <div class="font-bold">字体: </div>
-            <div class="w-3"></div>
-            <div v-if="traditionalFixedSize === null && fontSize < 20"
-                class="text-xs text-yellow-500">
-                字符尺寸20以下推荐使用点阵字体
+        <div class="flex items-end gap-4">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-baseline">
+                    <div class="font-bold">字体:</div>
+                    <div class="w-3"></div>
+                    <div v-if="traditionalFixedSize === null && fontSize < 20"
+                        class="text-xs text-yellow-500">
+                        字符尺寸20以下推荐使用点阵字体
+                    </div>
+                </div>
+                <div class="h-2"></div>
+                <select class="w-full select select-bordered select-sm" v-model="fontFace"
+                    :title="fontFace ? fontOptionLabel(fontFace) : ''">
+                    <option v-for="fontItem in fontFaces" :value="fontItem" :key="fontItem.id">
+                        {{ fontOptionLabel(fontItem) }}
+                    </option>
+                </select>
             </div>
-        </div>
-        <div class="h-2"></div>
-        <div class="flex items-center gap-5">
-            <select class="w-full max-w-xs select select-bordered select-sm" v-model="fontFace">
-                <option v-for="fontItem in fontFaces" :value="fontItem" :key="fontItem.id">{{ fontItem.name }}</option>
-            </select>
-            <div class="font-bold whitespace-nowrap">字号:</div>
-            <input type="number" v-model="traditionalSizeInput"
-                class="w-full max-w-xs input input-bordered input-sm"
-                :disabled="traditionalFixedSize !== null"
-                :min="traditionalSizeRange?.min" :max="traditionalSizeRange?.max" step="1"
-                @change="commitTraditionalSize" @blur="commitTraditionalSize" @keyup.enter="commitTraditionalSize" />
-            <div v-if="traditionalSizeRange" class="text-xs text-gray-500 whitespace-nowrap">
-                {{ traditionalSizeRange.min }}–{{ traditionalSizeRange.max }}
+            <div class="w-28 shrink-0">
+                <div class="flex items-baseline justify-between">
+                    <div class="font-bold">字号:</div>
+                    <div v-if="traditionalSizeRange" class="text-xs text-gray-500 whitespace-nowrap">
+                        {{ traditionalSizeRange.min }}–{{ traditionalSizeRange.max }}
+                    </div>
+                </div>
+                <div class="h-2"></div>
+                <input type="number" v-model="traditionalSizeInput"
+                    class="w-full input input-bordered input-sm"
+                    :disabled="traditionalFixedSize !== null"
+                    :min="traditionalSizeRange?.min" :max="traditionalSizeRange?.max" step="1"
+                    @change="commitTraditionalSize" @blur="commitTraditionalSize"
+                    @keyup.enter="commitTraditionalSize" />
             </div>
         </div>
         <div class="h-5"></div>
@@ -118,7 +143,9 @@ const {
         <div class="font-bold">字体:</div>
         <div class="h-2"></div>
         <select class="w-full select select-bordered select-sm" v-model="u8g2Font">
-            <option v-for="fontItem in u8g2Fonts" :value="fontItem" :key="fontItem.id">{{ fontItem.name }}</option>
+            <option v-for="fontItem in u8g2Fonts" :value="fontItem" :key="fontItem.id">
+                {{ fontOptionLabel(fontItem) }}
+            </option>
         </select>
         <div class="h-5"></div>
         <div class="flex items-center gap-4">
